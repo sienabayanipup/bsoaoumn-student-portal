@@ -233,7 +233,7 @@
     <div class="field">
       <label for="studentNumber">Student number</label>
       <input type="text" id="studentNumber" placeholder="e.g. 202x-xxxxx-MN-0" required autocomplete="off">
-      <p class="field-error" id="studentNumberError">Please follow the format shown: 2025-12345-MN-0</p>
+      <p class="field-error" id="studentNumberError">Please follow the format shown: 2025-14723-MN-0</p>
     </div>
 
     <div class="field">
@@ -274,12 +274,6 @@
   const submitBtn = document.getElementById('submitBtn');
   const studentNumberInput = document.getElementById('studentNumber');
   const studentNumberError = document.getElementById('studentNumberError');
-
-  // Remember the student's number on this device so they don't have
-  // to retype it every time they mark an activity.
-  const REMEMBER_KEY = 'bsoaoumn_student_number';
-  const rememberedNumber = localStorage.getItem(REMEMBER_KEY);
-  if (rememberedNumber) studentNumberInput.value = rememberedNumber;
 
   // Expected format: 2025-14723-MN-0
   const studentNumberPattern = /^\d{4}-\d{5}-[A-Za-z]{2}-\d$/;
@@ -394,7 +388,6 @@
             if (result.result === "success"){
               statusMsg.textContent = "Marked as done. Thank you!";
               statusMsg.className = "status success";
-              localStorage.setItem(REMEMBER_KEY, studentNumber);
               form.reset();
               studentNumberInput.value = studentNumber;
               studentNumberInput.classList.remove('invalid');
