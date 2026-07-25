@@ -418,7 +418,7 @@
 </div>
 
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_yOxXOd2OoTFz21rfw47VQbIQuNloBt7CQWIK4waUdwuJJUYinzjbSjFoE7OLw-PD/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfJd5swbGgfrGDgy_22suW9T0t_XEKC894fWgctgQ1rClw0sZfA_g9-bBf3kRGC-5n/exec";
 
   const form = document.getElementById('attendanceForm');
   const statusMsg = document.getElementById('statusMsg');
@@ -580,7 +580,7 @@
           updateProgress();
           return;
         }
-        statusMsg.textContent = "Something went wrong. Please try again.";
+        statusMsg.textContent = result.message || "Something went wrong. Please try again.";
         statusMsg.className = "status error";
       })
       .catch(() => {
