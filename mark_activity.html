@@ -196,11 +196,19 @@
     padding:0 26px 20px;
     margin:0;
   }
-  /* ---- Card-morph page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
-  .sheet{ view-transition-name: card-mark; }
-  ::view-transition-group(*){
-    animation-duration: .38s;
-    animation-timing-function: cubic-bezier(.2, 0, 0, 1);
+  /* ---- Zoom + fade page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
+  ::view-transition-old(root){
+    animation: bsoa-fade-out .32s cubic-bezier(.4,0,1,1) forwards;
+  }
+  ::view-transition-new(root){
+    animation: bsoa-fade-in .42s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  @keyframes bsoa-fade-out{
+    to{ opacity:0; transform:scale(1.03); }
+  }
+  @keyframes bsoa-fade-in{
+    from{ opacity:0; transform:scale(.97); }
+    to{ opacity:1; transform:scale(1); }
   }
 </style>
 </head>
@@ -224,8 +232,8 @@
   <form id="markForm">
     <div class="field">
       <label for="studentNumber">Student number</label>
-      <input type="text" id="studentNumber" placeholder="e.g. 2025-14723-MN-0" required autocomplete="off">
-      <p class="field-error" id="studentNumberError">Please follow the format shown: 2025-14723-MN-0</p>
+      <input type="text" id="studentNumber" placeholder="e.g. 202x-xxxxx-MN-0" required autocomplete="off">
+      <p class="field-error" id="studentNumberError">Please follow the format shown: 2025-12345-MN-0</p>
     </div>
 
     <div class="field">
