@@ -81,6 +81,25 @@
     background:var(--line);
     margin-bottom:14px;
   }
+  .letterhead-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .seal{
+    flex:0 0 auto;
+    width:48px;
+    height:48px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Playfair Display', serif;
+    font-weight:700;
+    font-size:14px;
+    color:var(--green-700);
+    background:rgba(26,107,63,0.10);
+  }
   .eyebrow{
     margin:0 0 3px;
     font-size:11px;
@@ -185,9 +204,14 @@
   <div class="letterhead">
     <a class="back-link" href="index.html">&larr; Back to Dashboard</a>
     <div class="letterhead-divider"></div>
-    <p class="eyebrow">BSOAOUMN 2-7</p>
-    <h1>Mark My Activity</h1>
-    <p class="page-desc">Mark completed activities to keep your personal tracker up to date.</p>
+    <div class="letterhead-row">
+      <div class="seal">PUP</div>
+      <div>
+        <p class="eyebrow">BSOAOUMN 2-7</p>
+        <h1>Mark My Activity</h1>
+        <p class="page-desc">Mark completed activities to keep your personal tracker up to date.</p>
+      </div>
+    </div>
   </div>
 
   <form id="markForm">
