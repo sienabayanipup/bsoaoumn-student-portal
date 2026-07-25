@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="view-transition" content="same-origin">
 <title>PUP OUS Student Lookup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -362,6 +363,12 @@
     .rc-header{ cursor:default; }
     * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
+  /* ---- Card-morph page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
+  .letterhead{ view-transition-name: card-lookup; }
+  ::view-transition-group(*){
+    animation-duration: .38s;
+    animation-timing-function: cubic-bezier(.2, 0, 0, 1);
+  }
 </style>
 </head>
 <body>
@@ -383,7 +390,7 @@
 
   <div class="search-card">
     <div class="search-row">
-      <input type="text" id="searchInput" placeholder="e.g. 202x-xxxxx-MN-0" autocomplete="off">
+      <input type="text" id="searchInput" placeholder="e.g. 2025-xxxxx-MN-0" autocomplete="off">
       <button id="searchBtn">Search</button>
     </div>
     <p class="hint">Enter a student number to pull their record from the 1st Sem Summary, Base Tracker, 2nd Sem Grades, and 1st Sem Enrollment sheets.</p>
