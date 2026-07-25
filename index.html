@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BSOAOUMN 2-7 Monitoring Tools</title>
+<title>BSOAOUMN 2-7 Monotoring Tools</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
@@ -73,8 +73,8 @@
   }
 
   .seal{
-    width:48px;
-    height:48px;
+    width:56px;
+    height:56px;
     margin:0 auto 12px;
     border-radius:50%;
     border:2px solid var(--maroon-700);
@@ -83,7 +83,7 @@
     justify-content:center;
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:800;
-    font-size:13px;
+    font-size:14px;
     letter-spacing:.01em;
     color:var(--maroon-700);
     background:
@@ -111,7 +111,7 @@
     background:rgba(122,12,30,0.06);
     border:1px solid rgba(122,12,30,0.15);
     border-radius:999px;
-    padding:4px 12px;
+    padding:6px 16px;
     margin:0 0 12px;
   }
 
@@ -119,7 +119,7 @@
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:800;
     font-size:26px;
-    margin:0 0 6px;
+    margin:0 0 16px;
     color:var(--ink);
     letter-spacing:-0.01em;
   }
@@ -238,11 +238,18 @@
   .footer{
     margin-top:18px;
     padding-top:14px;
-    font-size:11px;
+    font-size:10px;
     color:var(--muted);
     line-height:1.6;
     text-align:center;
     position:relative;
+  }
+  .footer .line1{
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink);
+    font-size:10.5px;
   }
   .footer::before{
     content:"";
@@ -252,14 +259,6 @@
     margin:0 auto 14px;
     background:linear-gradient(90deg, transparent, var(--line) 50%, transparent);
   }
-  .footer .line1{
-    font-weight:700;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-    color:var(--ink);
-    font-size:11.5px;
-  }
-
   @media (max-width:520px){
     .cards{ grid-template-columns:1fr; }
     body{ height:auto; padding:32px 16px; }
