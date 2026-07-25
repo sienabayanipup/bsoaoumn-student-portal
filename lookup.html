@@ -10,10 +10,10 @@
 <style>
   :root{
     --blue-900:#0c2840;
-    --blue-700:#1d507c;
-    --blue-500:#296aa3;
-    --accent-500:#ffc72c;
-    --accent-100:#fff2cc;
+    --blue-700:#134e8f;
+    --blue-500:#1f65ac;
+    --accent-500:#cfe4f5;
+    --accent-100:#eaf1f8;
     --paper:#faf6ea;
     --card:#fffdf7;
     --line:#e3d3a0;
@@ -28,7 +28,7 @@
     font-family:'Inter', Arial, sans-serif;
     background:
       radial-gradient(circle at 15% 10%, rgba(122,12,30,0.06), transparent 40%),
-      radial-gradient(circle at 90% 85%, rgba(142,202,230,0.10), transparent 45%),
+      radial-gradient(circle at 90% 85%, rgba(19,78,143,0.06), transparent 45%),
       var(--paper);
     color:var(--ink);
     min-height:100vh;
@@ -39,20 +39,21 @@
     margin:0 auto;
   }
 
+
   .page-desc{
     margin:6px 0 0;
     font-size:12.5px;
-    color:rgba(255,255,255,0.85);
+    color:var(--ink-soft);
     font-weight:500;
   }
 
   .letterhead{
-    background:linear-gradient(160deg, var(--blue-700) 0%, var(--blue-900) 100%);
-    color:#fff;
-    padding:18px 28px 22px;
+    background:var(--card);
+    color:var(--ink);
+    padding:20px 28px 20px;
     border-radius:12px 12px 0 0;
-    border-bottom:4px solid var(--accent-500);
-    box-shadow:0 8px 24px rgba(11,43,77,0.14);
+    border-top:5px solid var(--blue-700);
+    box-shadow:0 8px 24px rgba(11,43,77,0.08);
   }
   .back-link{
     display:inline-flex;
@@ -60,15 +61,16 @@
     gap:5px;
     font-size:12px;
     font-weight:600;
-    color:rgba(255,255,255,0.85);
+    color:var(--blue-700);
+    opacity:.75;
     text-decoration:none;
-    margin-bottom:12px;
-    transition:color .15s ease;
+    margin-bottom:10px;
+    transition:opacity .15s ease;
   }
-  .back-link:hover{ color:#fff; }
+  .back-link:hover{ opacity:1; }
   .letterhead-divider{
     height:1px;
-    background:rgba(255,255,255,0.18);
+    background:var(--line);
     margin-bottom:14px;
   }
   .letterhead-row{
@@ -78,17 +80,17 @@
   }
   .seal{
     flex:0 0 auto;
-    width:52px;
-    height:52px;
-    border-radius:50%;
-    border:2px solid var(--accent-500);
+    width:48px;
+    height:48px;
+    border-radius:12px;
     display:flex;
     align-items:center;
     justify-content:center;
     font-family:'Playfair Display', serif;
     font-weight:700;
-    font-size:15px;
-    background:radial-gradient(circle, rgba(142,202,230,0.14), transparent 70%);
+    font-size:14px;
+    color:var(--blue-700);
+    background:rgba(19,78,143,0.10);
   }
   .eyebrow{
     margin:0 0 3px;
@@ -96,7 +98,7 @@
     font-weight:700;
     letter-spacing:.14em;
     text-transform:uppercase;
-    color:var(--accent-500);
+    color:var(--blue-700);
   }
   h1{
     margin:0;
@@ -111,7 +113,7 @@
     border-top:none;
     border-radius:0 0 12px 12px;
     padding:22px 28px 26px;
-    box-shadow:0 8px 24px rgba(11,43,77,0.08);
+    box-shadow:0 8px 24px rgba(11,43,77,0.10);
     margin-bottom:24px;
   }
   .search-row{
@@ -135,18 +137,18 @@
   }
   button#searchBtn{
     padding:12px 22px;
-    background:linear-gradient(160deg, var(--blue-500), var(--blue-900));
+    background:var(--blue-700);
     color:#fff;
     font-size:15px;
     font-weight:700;
     border:none;
     border-radius:7px;
     cursor:pointer;
-    transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-    box-shadow:0 6px 16px rgba(11,43,77,0.25);
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    box-shadow:0 4px 12px rgba(19,78,143,0.22);
   }
-  button#searchBtn:hover:not(:disabled){ transform:translateY(-1px); }
-  button#searchBtn:disabled{ opacity:.65; cursor:not-allowed; }
+  button#searchBtn:hover:not(:disabled){ background:var(--blue-500); transform:translateY(-1px); }
+  button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; }
   .hint{
     font-size:12px;
     color:var(--ink-soft);
@@ -176,7 +178,7 @@
     border-radius:8px;
     padding:14px 20px;
     margin-bottom:16px;
-    box-shadow:0 4px 14px rgba(11,43,77,0.06);
+    box-shadow:0 4px 14px rgba(11,43,77,0.08);
   }
   .student-header-row{
     display:flex;
@@ -222,7 +224,7 @@
     border:1px solid var(--line);
     border-radius:10px;
     overflow:hidden;
-    box-shadow:0 4px 14px rgba(11,43,77,0.06);
+    box-shadow:0 4px 14px rgba(11,43,77,0.08);
   }
   .record-card .rc-header{
     background:var(--accent-100);
@@ -364,6 +366,7 @@
 </head>
 <body>
 
+
 <div class="wrap">
   <div class="letterhead">
     <a class="back-link" href="index.html">&larr; Back to Dashboard</a>
@@ -427,6 +430,8 @@
   });
 
   function renderGroupedActivities(body, entries){
+    // entries look like ["ENGL 017 - 07/21/2026", "Done"] — split on " - "
+    // to group everything under its subject.
     const groups = {};
     entries.forEach(([k, v]) => {
       const idx = k.indexOf(' - ');
@@ -451,7 +456,7 @@
         const chip = document.createElement('span');
         const doneClass = String(value).trim().toLowerCase() === 'done' ? 'done' : 'not-done';
         chip.className = 'activity-chip ' + doneClass;
-        chip.textContent = (dateLabel || value);
+        chip.textContent = (dateLabel || value) + (dateLabel ? '' : '');
         chip.title = dateLabel ? (dateLabel + ': ' + value) : value;
         chipRow.appendChild(chip);
       });
@@ -461,6 +466,7 @@
   }
 
   function renderAttendanceGroups(body, entries){
+    // entries look like ["ENGL 017", "3 time(s) — 07/20/2026, 07/21/2026, 07/22/2026"]
     entries.forEach(([subject, value]) => {
       const groupWrap = document.createElement('div');
       groupWrap.className = 'activity-group';
