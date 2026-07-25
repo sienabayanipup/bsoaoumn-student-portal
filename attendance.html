@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="view-transition" content="same-origin">
 <title>PUP Weekly Synchronous Attendance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -329,6 +330,12 @@
     .stamp-overlay.show, .stamp-overlay.show .stamp{ animation:none; opacity:1; }
     button, .chip span{ transition:none; }
   }
+  /* ---- Card-morph page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
+  .sheet{ view-transition-name: card-attendance; }
+  ::view-transition-group(*){
+    animation-duration: .38s;
+    animation-timing-function: cubic-bezier(.2, 0, 0, 1);
+  }
 </style>
 </head>
 <body>
@@ -360,7 +367,7 @@
 
     <div class="field">
       <label for="studentNumber">Student number</label>
-      <input type="text" id="studentNumber" name="studentNumber" placeholder="e.g. 202x-xxxxx-MN-0" required>
+      <input type="text" id="studentNumber" name="studentNumber" placeholder="e.g. 2025-12345-MN-0" required>
       <p class="field-error" id="studentNumberError">Please follow the format shown: 2025-12345-MN-0</p>
     </div>
 
