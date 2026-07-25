@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="view-transition" content="same-origin">
 <title>BSOAOUMN 2-7 Monitoring Tools</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -262,6 +263,16 @@
   @media (max-width:520px){
     .cards{ grid-template-columns:1fr; }
     body{ height:auto; padding:32px 16px; }
+  }
+  /* ---- Card-morph page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
+  .card.attendance{ view-transition-name: card-attendance; }
+  .card.lookup{ view-transition-name: card-lookup; }
+  .card.mark{ view-transition-name: card-mark; }
+  .card.overview{ view-transition-name: card-overview; }
+
+  ::view-transition-group(*){
+    animation-duration: .38s;
+    animation-timing-function: cubic-bezier(.2, 0, 0, 1);
   }
 </style>
 </head>
