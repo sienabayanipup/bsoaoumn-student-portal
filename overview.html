@@ -256,6 +256,58 @@
     color:var(--ink-soft);
     font-weight:400;
   }
+  .present-item{
+    padding:9px 14px;
+    background:#e6f4ea;
+    border:1px solid #bfe3cc;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--good);
+  }
+  .present-item span{
+    color:var(--ink-soft);
+    font-weight:400;
+  }
+  .roster-columns{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .roster-col-title{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:8px;
+  }
+  .roster-col-title.good-title{ color:var(--good); }
+  .roster-col-title.bad-title{ color:var(--error); }
+
+  .result-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    user-select:none;
+    margin-top:16px;
+  }
+  .result-header .toggle-label{
+    font-size:12px;
+    font-weight:700;
+    color:var(--gold-700);
+  }
+  .result-header .chevron{
+    font-size:11px;
+    color:var(--gold-700);
+    transition:transform .15s ease;
+  }
+  .result-body.collapsed{ display:none; }
+  .result-header.collapsed .chevron{ transform:rotate(-90deg); }
+
+  @media (max-width:480px){
+    .roster-columns{ grid-template-columns:1fr; }
+  }
 
   .disclaimer{
     font-size:12px;
@@ -423,17 +475,47 @@
           <div class="check-summary-box bad"><div class="num">${data.absentCount}</div><div class="lbl">Absent</div></div>
         </div>`;
 
-        if (data.absentCount > 0){
+        html += `<div class="result-header" id="attResultHeader">
+          <span class="toggle-label">View names</span>
+          <span class="chevron">&#9660;</span>
+        </div>`;
+        html += `<div class="result-body" id="attResultBody">`;
+        html += `<div class="roster-columns">`;
+
+        html += `<div><div class="roster-col-title good-title">Present (${data.presentCount})</div>`;
+        if (data.presentees && data.presentees.length > 0){
+          html += `<div class="missing-list">`;
+          data.presentees.forEach(s => {
+            html += `<div class="present-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">No one checked in yet.</p>`;
+        }
+        html += `</div>`;
+
+        html += `<div><div class="roster-col-title bad-title">Absent (${data.absentCount})</div>`;
+        if (data.absentees && data.absentees.length > 0){
           html += `<div class="missing-list">`;
           data.absentees.forEach(s => {
             html += `<div class="missing-item">${s.name} <span>(${s.studentNumber})</span></div>`;
           });
           html += `</div>`;
         } else {
-          html += `<p class="status-msg">Everyone was present. Nice!</p>`;
+          html += `<p class="status-msg" style="padding:0;">Everyone was present. Nice!</p>`;
         }
+        html += `</div>`;
+
+        html += `</div></div>`;
 
         attResult.innerHTML = html;
+
+        const attHeader = document.getElementById('attResultHeader');
+        const attBody = document.getElementById('attResultBody');
+        attHeader.addEventListener('click', () => {
+          attBody.classList.toggle('collapsed');
+          attHeader.classList.toggle('collapsed');
+        });
       })
       .catch(() => {
         attStatus.textContent = "Could not connect. Check your internet and try again.";
@@ -513,17 +595,47 @@
           <div class="check-summary-box bad"><div class="num">${data.notDoneCount}</div><div class="lbl">Not Submitted</div></div>
         </div>`;
 
-        if (data.notDoneCount > 0){
+        html += `<div class="result-header" id="actResultHeader">
+          <span class="toggle-label">View names</span>
+          <span class="chevron">&#9660;</span>
+        </div>`;
+        html += `<div class="result-body" id="actResultBody">`;
+        html += `<div class="roster-columns">`;
+
+        html += `<div><div class="roster-col-title good-title">Submitted (${data.doneCount})</div>`;
+        if (data.doneStudents && data.doneStudents.length > 0){
+          html += `<div class="missing-list">`;
+          data.doneStudents.forEach(s => {
+            html += `<div class="present-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">No one has submitted yet.</p>`;
+        }
+        html += `</div>`;
+
+        html += `<div><div class="roster-col-title bad-title">Not Submitted (${data.notDoneCount})</div>`;
+        if (data.notDoneStudents && data.notDoneStudents.length > 0){
           html += `<div class="missing-list">`;
           data.notDoneStudents.forEach(s => {
             html += `<div class="missing-item">${s.name} <span>(${s.studentNumber})</span></div>`;
           });
           html += `</div>`;
         } else {
-          html += `<p class="status-msg">Everyone has submitted this activity. Nice!</p>`;
+          html += `<p class="status-msg" style="padding:0;">Everyone has submitted this activity. Nice!</p>`;
         }
+        html += `</div>`;
+
+        html += `</div></div>`;
 
         actResult.innerHTML = html;
+
+        const actHeader = document.getElementById('actResultHeader');
+        const actBody = document.getElementById('actResultBody');
+        actHeader.addEventListener('click', () => {
+          actBody.classList.toggle('collapsed');
+          actHeader.classList.toggle('collapsed');
+        });
       })
       .catch(() => {
         actStatus.textContent = "Could not connect. Check your internet and try again.";
