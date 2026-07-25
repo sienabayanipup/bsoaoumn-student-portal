@@ -363,11 +363,19 @@
     .rc-header{ cursor:default; }
     * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
-  /* ---- Card-morph page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
-  .letterhead{ view-transition-name: card-lookup; }
-  ::view-transition-group(*){
-    animation-duration: .38s;
-    animation-timing-function: cubic-bezier(.2, 0, 0, 1);
+  /* ---- Zoom + fade page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
+  ::view-transition-old(root){
+    animation: bsoa-fade-out .32s cubic-bezier(.4,0,1,1) forwards;
+  }
+  ::view-transition-new(root){
+    animation: bsoa-fade-in .42s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  @keyframes bsoa-fade-out{
+    to{ opacity:0; transform:scale(1.03); }
+  }
+  @keyframes bsoa-fade-in{
+    from{ opacity:0; transform:scale(.97); }
+    to{ opacity:1; transform:scale(1); }
   }
 </style>
 </head>
@@ -390,7 +398,7 @@
 
   <div class="search-card">
     <div class="search-row">
-      <input type="text" id="searchInput" placeholder="e.g. 2025-xxxxx-MN-0" autocomplete="off">
+      <input type="text" id="searchInput" placeholder="e.g. 202x-xxxxx-MN-0" autocomplete="off">
       <button id="searchBtn">Search</button>
     </div>
     <p class="hint">Enter a student number to pull their record from the 1st Sem Summary, Base Tracker, 2nd Sem Grades, and 1st Sem Enrollment sheets.</p>
