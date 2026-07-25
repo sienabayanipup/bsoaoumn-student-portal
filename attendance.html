@@ -375,7 +375,7 @@
 
     <div class="field">
       <label for="studentNumber">Student number</label>
-      <input type="text" id="studentNumber" name="studentNumber" placeholder="e.g. 202x-xxxx-MN-0" required>
+      <input type="text" id="studentNumber" name="studentNumber" placeholder="e.g. 202x-xxxxx-MN-0" required>
       <p class="field-error" id="studentNumberError">Please follow the format shown: 2025-12345-MN-0</p>
     </div>
 
@@ -459,12 +459,6 @@
   const studentNumberPattern = /^\d{4}-\d{5}-[A-Za-z]{2}-\d$/;
   const studentNumberInput = document.getElementById('studentNumber');
   const studentNumberError = document.getElementById('studentNumberError');
-
-  // Remember the student's number on this device so they don't have
-  // to retype it every time they submit attendance.
-  const REMEMBER_KEY = 'bsoaoumn_student_number';
-  const rememberedNumber = localStorage.getItem(REMEMBER_KEY);
-  if (rememberedNumber) studentNumberInput.value = rememberedNumber;
 
   function validateStudentNumber(){
     const value = studentNumberInput.value.trim();
@@ -561,9 +555,6 @@
         if (result.result === "success"){
           statusMsg.textContent = "Attendance recorded. Thank you!";
           statusMsg.className = "status success";
-
-          localStorage.setItem(REMEMBER_KEY, studentNumberVal);
-          localStorage.setItem('bsoaoumn_full_name', fullNameVal);
 
           const now = new Date();
           stampDate.textContent = now.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
