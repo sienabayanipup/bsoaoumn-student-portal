@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="view-transition" content="same-origin">
 <title>PUP OUS Class Overview</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -316,6 +317,12 @@
     text-align:center;
     margin:20px 0 0;
   }
+  /* ---- Card-morph page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
+  .letterhead{ view-transition-name: card-overview; }
+  ::view-transition-group(*){
+    animation-duration: .38s;
+    animation-timing-function: cubic-bezier(.2, 0, 0, 1);
+  }
 </style>
 </head>
 <body>
@@ -331,8 +338,9 @@
 </div>
 
 <div class="wrap">
+  <a class="back-link" href="index.html">&larr; Back to Dashboard</a>
+
   <div class="letterhead">
-    <a class="back-link" href="index.html">&larr; Back to Dashboard</a>
     <div class="letterhead-divider"></div>
     <div class="letterhead-row">
       <div class="seal">PUP</div>
@@ -407,6 +415,11 @@
 
   function unlock(){
     gateOverlay.style.display = 'none';
+    sessionStorage.setItem('overviewAuthed', 'true');
+  }
+
+  if (sessionStorage.getItem('overviewAuthed') === 'true'){
+    unlock();
   }
 
   function tryUnlock(){
