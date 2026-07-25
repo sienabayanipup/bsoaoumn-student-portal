@@ -408,11 +408,6 @@
 
   function unlock(){
     gateOverlay.style.display = 'none';
-    sessionStorage.setItem('overviewAuthed', 'true');
-  }
-
-  if (sessionStorage.getItem('overviewAuthed') === 'true'){
-    unlock();
   }
 
   function tryUnlock(){
