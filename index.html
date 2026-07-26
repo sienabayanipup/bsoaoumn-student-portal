@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#7a0c1e">
 <meta name="view-transition" content="same-origin">
 <title>BSOAOUMN 2-7 Monitoring Tools</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,6 +46,7 @@
     align-items:center;
     justify-content:center;
     padding:20px 16px;
+    padding:max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
     position:relative;
   }
 
@@ -257,6 +259,14 @@
   a.card:active{
     transform:translateY(-3px) scale(1.005) !important;
   }
+  a.card:focus-visible{
+    outline:2.5px solid currentColor;
+    outline-offset:3px;
+  }
+  .card.attendance:focus-visible{ color:var(--maroon-700); }
+  .card.lookup:focus-visible{ color:var(--blue-700); }
+  .card.mark:focus-visible{ color:var(--green-700); }
+  .card.overview:focus-visible{ color:var(--gold-700); }
 
   /* Ripple effect on click */
   .ripple{
@@ -384,7 +394,7 @@
     font-weight:700;
     font-size:12px;
     letter-spacing:.02em;
-    color:#a09b8f;
+    color:var(--muted);
     transition:color .2s ease, border-color .2s ease;
   }
   .card-footer .arrow{
