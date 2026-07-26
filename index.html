@@ -25,7 +25,7 @@
     --muted:#6b6a68;
   }
   *{box-sizing:border-box;}
-  html, body{ height:100%; }
+  html{ height:100%; }
   body{
     margin:0;
     font-family:'Inter', Arial, sans-serif;
@@ -38,8 +38,8 @@
       radial-gradient(circle at 92% 88%, rgba(19,78,143,0.07), transparent 44%),
       linear-gradient(160deg, var(--paper-1) 0%, var(--paper-2) 100%);
     color:var(--ink);
-    height:100vh;
-    overflow:hidden;
+    min-height:100vh; /* fallback for browsers without svh support */
+    min-height:100svh; /* fills the screen but never clips content that doesn't fit */
     display:flex;
     flex-direction:column;
     align-items:center;
