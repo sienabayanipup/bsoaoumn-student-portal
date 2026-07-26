@@ -279,22 +279,22 @@
   .cards a.card:nth-child(4){ animation-delay:.26s; }
 
   .card.attendance { border-top-color: var(--maroon-700); }
-  .card.attendance:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(122,12,30,0.14), 0 10px 30px rgba(122,12,30,0.26); }
+  .card.attendance:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(122,12,30,0.12), 0 8px 26px rgba(122,12,30,0.22); }
   .card.attendance .ripple{ background:rgba(122,12,30,0.18); }
 
   .card.lookup     { border-top-color: var(--blue-700); }
-  .card.lookup:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(19,78,143,0.14), 0 10px 30px rgba(19,78,143,0.26); }
+  .card.lookup:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(19,78,143,0.12), 0 8px 26px rgba(19,78,143,0.22); }
   .card.lookup .ripple{ background:rgba(19,78,143,0.18); }
 
   .card.mark       { border-top-color: var(--green-700); }
-  .card.mark:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(26,107,63,0.14), 0 10px 30px rgba(26,107,63,0.26); }
+  .card.mark:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(26,107,63,0.12), 0 8px 26px rgba(26,107,63,0.22); }
   .card.mark .ripple{ background:rgba(26,107,63,0.18); }
 
   .card.overview   { border-top-color: var(--gold-700); }
-  .card.overview:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(138,109,31,0.14), 0 10px 30px rgba(138,109,31,0.26); }
+  .card.overview:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(138,109,31,0.12), 0 8px 26px rgba(138,109,31,0.22); }
   .card.overview .ripple{ background:rgba(138,109,31,0.18); }
 
-  /* ---- Icon badges: layered "3D" look with a matching glow on hover ---- */
+  /* ---- Icon badges: layered "3D" look (LITE: no blur glow) ---- */
   .icon-badge{
     width:60px;
     height:60px;
@@ -309,18 +309,6 @@
   a.card:hover .icon-badge{ transform:scale(1.1) translateY(-2px); }
   .icon-badge svg{ width:29px; height:29px; stroke-width:1.8px; position:relative; z-index:1; }
 
-  .icon-badge::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:12px;
-    opacity:0;
-    transition:opacity .3s ease;
-    filter:blur(10px);
-    z-index:0;
-  }
-  a.card:hover .icon-badge::after{ opacity:.75; }
-
   .card.attendance .icon-badge{
     color:var(--maroon-700);
     background:
@@ -330,7 +318,6 @@
       inset 0 1px 1px rgba(255,255,255,0.75),
       inset 0 -3px 5px rgba(122,12,30,0.14);
   }
-  .card.attendance .icon-badge::after{ background:var(--maroon-700); box-shadow:0 0 22px 6px rgba(122,12,30,0.55); }
 
   .card.lookup .icon-badge{
     color:var(--blue-700);
@@ -341,7 +328,6 @@
       inset 0 1px 1px rgba(255,255,255,0.75),
       inset 0 -3px 5px rgba(19,78,143,0.14);
   }
-  .card.lookup .icon-badge::after{ background:var(--blue-700); box-shadow:0 0 22px 6px rgba(19,78,143,0.55); }
 
   .card.mark .icon-badge{
     color:var(--green-700);
@@ -352,7 +338,6 @@
       inset 0 1px 1px rgba(255,255,255,0.75),
       inset 0 -3px 5px rgba(26,107,63,0.14);
   }
-  .card.mark .icon-badge::after{ background:var(--green-700); box-shadow:0 0 22px 6px rgba(26,107,63,0.55); }
 
   .card.overview .icon-badge{
     color:var(--gold-700);
@@ -363,7 +348,6 @@
       inset 0 1px 1px rgba(255,255,255,0.75),
       inset 0 -3px 5px rgba(138,109,31,0.14);
   }
-  .card.overview .icon-badge::after{ background:var(--gold-700); box-shadow:0 0 22px 6px rgba(138,109,31,0.55); }
 
   .card .title-row{
     margin-bottom:6px;
