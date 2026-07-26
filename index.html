@@ -64,7 +64,6 @@
     gap:clamp(20px, 4vw, 48px);
     padding:0.5vh 0;
   }
-  .hero-copy{ opacity:0; animation:fadeInUp .7s ease .05s forwards; }
   .eyebrow{
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:700;
@@ -73,6 +72,8 @@
     text-transform:uppercase;
     color:var(--blue-700);
     margin:0 0 10px;
+    opacity:0;
+    animation:fadeInUp .5s ease .05s forwards;
   }
   h1{
     font-family:'Plus Jakarta Sans', sans-serif;
@@ -80,8 +81,13 @@
     font-size:clamp(26px, 3.6vw, 40px);
     line-height:1.08;
     letter-spacing:-0.015em;
-    margin:0 0 4px;
+    margin:0 0 10px;
     color:var(--maroon-700);
+    clip-path:inset(0 100% 0 0);
+    animation:headlineWipe .6s cubic-bezier(.2,.8,.2,1) .12s forwards;
+  }
+  @keyframes headlineWipe{
+    to{ clip-path:inset(0 0% 0 0); }
   }
   h1 span{
     display:block;
@@ -97,6 +103,8 @@
     font-size:13.5px;
     color:var(--gold-700);
     margin:14px 0 12px;
+    opacity:0;
+    animation:fadeInUp .5s ease .28s forwards;
   }
   .hero-desc{
     font-size:14px;
@@ -104,12 +112,16 @@
     color:var(--muted);
     max-width:460px;
     margin:0 0 24px;
+    opacity:0;
+    animation:fadeInUp .5s ease .34s forwards;
   }
   .hero-actions{
     display:flex;
     align-items:center;
     gap:16px;
     flex-wrap:wrap;
+    opacity:0;
+    animation:fadeInUp .5s ease .4s forwards;
   }
   .btn-primary{
     display:inline-flex;
@@ -150,14 +162,24 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    opacity:0;
-    animation:fadeInUp .7s ease .18s forwards;
     max-height:100%;
   }
   .hero-art svg{
     width:100%;
     height:auto;
     max-height:36vh;
+  }
+  /* Each piece of the illustration settles in on its own, staggered,
+     instead of the whole graphic fading in as one flat block. */
+  .art-piece{
+    opacity:0;
+    transform:translateY(10px) scale(.94);
+    transform-box:fill-box;
+    transform-origin:center;
+    animation:pieceIn .55s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes pieceIn{
+    to{ opacity:1; transform:translateY(0) scale(1); }
   }
   .art-float{ animation:artFloat 5s ease-in-out infinite; }
   .art-float-slow{ animation:artFloat 6.5s ease-in-out infinite; }
@@ -320,6 +342,32 @@
       transition-duration:.001ms !important;
     }
   }
+
+  /* ---------- Portal click transition ---------- */
+  .portal-overlay{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9999;
+  }
+  .portal-overlay .ring{
+    position:absolute;
+    width:26px;
+    height:26px;
+    margin-left:-13px;
+    margin-top:-13px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--maroon-700), var(--maroon-600));
+    transform:scale(0);
+    opacity:0;
+  }
+  .portal-overlay.active .ring{
+    animation:portalExpand .5s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes portalExpand{
+    0%{ transform:scale(0); opacity:.92; }
+    100%{ transform:scale(110); opacity:1; }
+  }
 </style>
 </head>
 <body>
@@ -366,49 +414,58 @@
           </linearGradient>
         </defs>
 
-        <ellipse cx="190" cy="292" rx="140" ry="18" fill="#7a0c1e" opacity="0.06"/>
-        <polygon points="190,150 320,205 190,260 60,205" fill="url(#deskTop)" stroke="#e7e0d0" stroke-width="1.5"/>
-        <polygon points="140,196 240,196 262,207 118,207" fill="url(#baseGrad)"/>
-        <polygon points="118,207 262,207 262,213 118,213" fill="#b3a780"/>
+        <g class="art-piece" style="animation-delay:0s">
+          <ellipse cx="190" cy="292" rx="140" ry="18" fill="#7a0c1e" opacity="0.06"/>
+          <polygon points="190,150 320,205 190,260 60,205" fill="url(#deskTop)" stroke="#e7e0d0" stroke-width="1.5"/>
+          <polygon points="140,196 240,196 262,207 118,207" fill="url(#baseGrad)"/>
+          <polygon points="118,207 262,207 262,213 118,213" fill="#b3a780"/>
+        </g>
 
-        <g class="art-float">
-          <polygon points="140,196 240,196 236,120 144,120" fill="url(#lidGrad)"/>
-          <polygon points="150,190 230,190 227,128 153,128" fill="url(#screenGrad)"/>
-          <rect x="160" y="136" width="58" height="6" rx="2" fill="#7a0c1e" opacity="0.55"/>
-          <rect x="160" y="148" width="40" height="4" rx="2" fill="#134e8f" opacity="0.4"/>
-          <g fill="none" stroke="#1a6b3f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M161 160 165 164 172 156"/>
-            <path d="M161 170 165 174 172 166"/>
-            <path d="M161 180 165 184 172 176"/>
+        <g class="art-piece" style="animation-delay:.09s">
+          <g class="art-float">
+            <polygon points="140,196 240,196 236,120 144,120" fill="url(#lidGrad)"/>
+            <polygon points="150,190 230,190 227,128 153,128" fill="url(#screenGrad)"/>
+            <rect x="160" y="136" width="58" height="6" rx="2" fill="#7a0c1e" opacity="0.55"/>
+            <rect x="160" y="148" width="40" height="4" rx="2" fill="#134e8f" opacity="0.4"/>
+            <g fill="none" stroke="#1a6b3f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M161 160 165 164 172 156"/>
+              <path d="M161 170 165 174 172 166"/>
+              <path d="M161 180 165 184 172 176"/>
+            </g>
+            <rect x="178" y="158" width="38" height="3.5" rx="1.5" fill="#241f1a" opacity="0.30"/>
+            <rect x="178" y="168" width="30" height="3.5" rx="1.5" fill="#241f1a" opacity="0.30"/>
+            <rect x="178" y="178" width="34" height="3.5" rx="1.5" fill="#241f1a" opacity="0.30"/>
           </g>
-          <rect x="178" y="158" width="38" height="3.5" rx="1.5" fill="#241f1a" opacity="0.30"/>
-          <rect x="178" y="168" width="30" height="3.5" rx="1.5" fill="#241f1a" opacity="0.30"/>
-          <rect x="178" y="178" width="34" height="3.5" rx="1.5" fill="#241f1a" opacity="0.30"/>
+          <polygon points="150,199 230,199 226,192 154,192" fill="#eadfc0"/>
         </g>
 
-        <polygon points="150,199 230,199 226,192 154,192" fill="#eadfc0"/>
-
-        <g class="art-float-slow">
-          <rect x="248" y="96" width="92" height="56" rx="12" fill="#fffdf7" stroke="#e7e0d0" stroke-width="1.5"/>
-          <circle cx="270" cy="118" r="10" fill="rgba(19,78,143,0.12)"/>
-          <circle cx="270" cy="118" r="4.5" fill="#134e8f"/>
-          <path d="M263 132c0-5 4-8 7-8s7 3 7 8" fill="none" stroke="#134e8f" stroke-width="2" stroke-linecap="round"/>
-          <rect x="288" y="110" width="38" height="4" rx="2" fill="#134e8f" opacity="0.5"/>
-          <rect x="288" y="120" width="30" height="3.5" rx="1.5" fill="#241f1a" opacity="0.25"/>
-          <rect x="288" y="128" width="34" height="3.5" rx="1.5" fill="#241f1a" opacity="0.25"/>
+        <g class="art-piece" style="animation-delay:.16s">
+          <g class="art-float-slow">
+            <rect x="248" y="96" width="92" height="56" rx="12" fill="#fffdf7" stroke="#e7e0d0" stroke-width="1.5"/>
+            <circle cx="270" cy="118" r="10" fill="rgba(19,78,143,0.12)"/>
+            <circle cx="270" cy="118" r="4.5" fill="#134e8f"/>
+            <path d="M263 132c0-5 4-8 7-8s7 3 7 8" fill="none" stroke="#134e8f" stroke-width="2" stroke-linecap="round"/>
+            <rect x="288" y="110" width="38" height="4" rx="2" fill="#134e8f" opacity="0.5"/>
+            <rect x="288" y="120" width="30" height="3.5" rx="1.5" fill="#241f1a" opacity="0.25"/>
+            <rect x="288" y="128" width="34" height="3.5" rx="1.5" fill="#241f1a" opacity="0.25"/>
+          </g>
         </g>
 
-        <g class="art-float-rev">
-          <rect x="34" y="150" width="82" height="60" rx="12" fill="#fffdf7" stroke="#e7e0d0" stroke-width="1.5"/>
-          <rect x="50" y="188" width="9" height="14" rx="2" fill="#8a6d1f" opacity="0.55"/>
-          <rect x="64" y="178" width="9" height="24" rx="2" fill="#1a6b3f" opacity="0.6"/>
-          <rect x="78" y="170" width="9" height="32" rx="2" fill="#7a0c1e" opacity="0.55"/>
-          <rect x="92" y="182" width="9" height="20" rx="2" fill="#134e8f" opacity="0.5"/>
+        <g class="art-piece" style="animation-delay:.22s">
+          <g class="art-float-rev">
+            <rect x="34" y="150" width="82" height="60" rx="12" fill="#fffdf7" stroke="#e7e0d0" stroke-width="1.5"/>
+            <rect x="50" y="188" width="9" height="14" rx="2" fill="#8a6d1f" opacity="0.55"/>
+            <rect x="64" y="178" width="9" height="24" rx="2" fill="#1a6b3f" opacity="0.6"/>
+            <rect x="78" y="170" width="9" height="32" rx="2" fill="#7a0c1e" opacity="0.55"/>
+            <rect x="92" y="182" width="9" height="20" rx="2" fill="#134e8f" opacity="0.5"/>
+          </g>
         </g>
 
-        <g class="art-float">
-          <circle cx="216" cy="88" r="18" fill="#1a6b3f" opacity="0.95"/>
-          <path d="M208 88l5.5 5.5L226 81" fill="none" stroke="#fffdf7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <g class="art-piece" style="animation-delay:.3s">
+          <g class="art-float">
+            <circle cx="216" cy="88" r="18" fill="#1a6b3f" opacity="0.95"/>
+            <path d="M208 88l5.5 5.5L226 81" fill="none" stroke="#fffdf7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
         </g>
       </svg>
     </div>
@@ -417,7 +474,7 @@
   <section class="features">
     <div class="features-head">
       <p class="features-eyebrow">What's inside</p>
-      <h2>One portal. Smarter academic management.</h2>
+      <h2>One portal. Four essential tools.</h2>
     </div>
 
     <div class="feature-grid">
@@ -474,6 +531,58 @@
   </footer>
 
 </div>
+
+<div class="portal-overlay" id="portalOverlay"><div class="ring" id="portalRing"></div></div>
+
+<script>
+  // Magnetic CTA button — pulls gently toward the cursor when nearby.
+  (function(){
+    var btn = document.querySelector('.btn-primary');
+    if (!btn) return;
+    var ACTIVATION_RADIUS = 55; // px beyond the button's own bounds
+    var STRENGTH = 0.35;
+
+    document.addEventListener('mousemove', function(e){
+      var rect = btn.getBoundingClientRect();
+      var cx = rect.left + rect.width / 2;
+      var cy = rect.top + rect.height / 2;
+      var dx = e.clientX - cx;
+      var dy = e.clientY - cy;
+      var maxDist = Math.max(rect.width, rect.height) / 2 + ACTIVATION_RADIUS;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < maxDist){
+        var pull = (1 - dist / maxDist) * STRENGTH;
+        btn.style.transform = 'translate(' + (dx * pull).toFixed(1) + 'px, ' + (dy * pull - 2).toFixed(1) + 'px)';
+      } else {
+        btn.style.transform = '';
+      }
+    });
+  })();
+
+  // Portal-style click transition — a circle expands from the button,
+  // matching the "Enter Portal" name, then navigates once it covers
+  // the screen. Respects reduced-motion by just navigating instantly.
+  (function(){
+    var btn = document.querySelector('.btn-primary');
+    var overlay = document.getElementById('portalOverlay');
+    var ring = document.getElementById('portalRing');
+    if (!btn || !overlay || !ring) return;
+
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return; // let the link navigate normally, no overlay
+
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      var href = btn.getAttribute('href');
+      var rect = btn.getBoundingClientRect();
+      ring.style.left = (rect.left + rect.width / 2) + 'px';
+      ring.style.top = (rect.top + rect.height / 2) + 'px';
+      overlay.classList.add('active');
+      setTimeout(function(){ window.location.href = href; }, 460);
+    });
+  })();
+</script>
 
 </body>
 </html>
