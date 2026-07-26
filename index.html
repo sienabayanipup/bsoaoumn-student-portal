@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="view-transition" content="same-origin">
 <title>BSOAOUMN 2-7 Student Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,183 +39,156 @@
     height:100vh;
     overflow:hidden;
     display:flex;
-    flex-direction:column;
+    align-items:center;
+    justify-content:center;
   }
 
   .page{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    min-height:0;
-    max-width:1160px;
     width:100%;
+    max-width:1220px;
     margin:0 auto;
-    padding:3.2vh 28px 1.4vh;
+    padding:0 32px;
   }
 
   /* ---------- Hero ---------- */
   .hero{
-    flex:1 1 auto;
-    min-height:0;
     display:grid;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:0.86fr 1.14fr;
     align-items:center;
-    gap:clamp(20px, 4vw, 48px);
-    padding:0.5vh 0;
+    gap:clamp(24px, 4vw, 56px);
+    margin-bottom:48px;
   }
-  .eyebrow{
+  .hero-copy{ opacity:0; animation:fadeInUp .7s ease .05s forwards; }
+  .hero-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:700;
     font-size:11px;
-    letter-spacing:.14em;
+    letter-spacing:.09em;
     text-transform:uppercase;
-    color:var(--blue-700);
-    margin:0 0 10px;
-    opacity:0;
-    animation:fadeInUp .5s ease .05s forwards;
+    color:var(--gold-700);
+    background:#fdf6e6;
+    border:1px solid #e6d5a3;
+    border-radius:999px;
+    padding:6px 14px 6px 10px;
+    margin:0 0 18px;
   }
+  .hero-badge svg{ width:13px; height:13px; flex:0 0 auto; }
   h1{
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:800;
-    font-size:clamp(26px, 3.6vw, 40px);
+    font-size:clamp(30px, 3.6vw, 42px);
     line-height:1.08;
     letter-spacing:-0.015em;
-    margin:0 0 10px;
+    margin:0 0 2px;
     color:var(--maroon-700);
-    clip-path:inset(0 100% 0 0);
-    animation:headlineWipe .6s cubic-bezier(.2,.8,.2,1) .12s forwards;
-  }
-  @keyframes headlineWipe{
-    to{ clip-path:inset(0 0% 0 0); }
   }
   h1 span{
     display:block;
     color:var(--ink);
-    font-size:0.62em;
+    font-size:0.66em;
     font-weight:700;
     margin-top:4px;
     letter-spacing:-0.005em;
   }
-  .hero-sub{
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:700;
-    font-size:13.5px;
-    color:var(--gold-700);
-    margin:14px 0 12px;
-    opacity:0;
-    animation:fadeInUp .5s ease .28s forwards;
+  .hero-rule{
+    width:44px;
+    height:3px;
+    border-radius:2px;
+    background:linear-gradient(90deg, var(--gold-700), transparent);
+    margin:16px 0 18px;
   }
   .hero-desc{
-    font-size:14px;
-    line-height:1.65;
+    font-size:14.5px;
+    line-height:1.62;
     color:var(--muted);
-    max-width:460px;
-    margin:0 0 24px;
-    opacity:0;
-    animation:fadeInUp .5s ease .34s forwards;
+    max-width:420px;
+    margin:0 0 26px;
   }
-  .hero-actions{
-    display:flex;
-    align-items:center;
-    gap:16px;
-    flex-wrap:wrap;
-    opacity:0;
-    animation:fadeInUp .5s ease .4s forwards;
-  }
+  .hero-actions{ margin-bottom:18px; }
   .btn-primary{
     display:inline-flex;
     align-items:center;
-    gap:8px;
+    gap:9px;
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:700;
-    font-size:14px;
+    font-size:14.5px;
     color:#fff;
     background:linear-gradient(135deg, var(--maroon-700), var(--maroon-600));
     border:none;
     border-radius:10px;
-    padding:13px 26px;
+    padding:13px 24px;
     text-decoration:none;
-    box-shadow:0 6px 16px rgba(122,12,30,0.22);
-    transition:transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease;
+    box-shadow:0 8px 20px rgba(122,12,30,0.28);
+    transition:transform .18s ease, box-shadow .18s ease;
   }
   .btn-primary:hover{
     transform:translateY(-2px);
-    box-shadow:0 10px 22px rgba(122,12,30,0.28);
+    box-shadow:0 12px 26px rgba(122,12,30,0.34);
   }
   .btn-primary svg{ transition:transform .18s ease; }
   .btn-primary:hover svg{ transform:translateX(3px); }
   .hero-meta{
     display:flex;
     align-items:center;
-    gap:8px;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .hero-meta span.item{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:600;
-    font-size:11px;
-    letter-spacing:.03em;
+    font-size:11.5px;
     color:var(--muted);
   }
-  .hero-meta .dot{ opacity:.4; }
+  .hero-meta svg{ width:14px; height:14px; flex:0 0 auto; }
+  .hero-meta .mi-secure{ color:var(--maroon-700); }
+  .hero-meta .mi-reliable{ color:var(--blue-700); }
+  .hero-meta .mi-internal{ color:var(--gold-700); }
 
   /* ---------- Hero illustration ---------- */
   .hero-art{
     display:flex;
     align-items:center;
     justify-content:center;
-    max-height:100%;
+    opacity:0;
+    animation:fadeInUp .8s ease .18s forwards;
   }
   .hero-art svg{
     width:100%;
     height:auto;
-    max-height:36vh;
-  }
-  /* Each piece of the illustration settles in on its own, staggered,
-     instead of the whole graphic fading in as one flat block. */
-  .art-piece{
-    opacity:0;
-    transform:translateY(10px) scale(.94);
-    transform-box:fill-box;
-    transform-origin:center;
-    animation:pieceIn .55s cubic-bezier(.2,.8,.2,1) forwards;
-  }
-  @keyframes pieceIn{
-    to{ opacity:1; transform:translateY(0) scale(1); }
+    max-height:42vh;
+    filter:drop-shadow(0 16px 22px rgba(122,12,30,0.10));
   }
   .art-float{ animation:artFloat 5s ease-in-out infinite; }
   .art-float-slow{ animation:artFloat 6.5s ease-in-out infinite; }
   .art-float-rev{ animation:artFloatRev 5.5s ease-in-out infinite; }
-  @keyframes artFloat{
-    0%,100%{ transform:translateY(0); }
-    50%{ transform:translateY(-8px); }
-  }
-  @keyframes artFloatRev{
-    0%,100%{ transform:translateY(0); }
-    50%{ transform:translateY(7px); }
-  }
+  @keyframes artFloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  @keyframes artFloatRev{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(5px);} }
 
   /* ---------- Feature section ---------- */
-  .features{
-    flex:0 0 auto;
-    margin-top:4.2vh;
-  }
   .features-head{
     text-align:center;
     max-width:520px;
-    margin:0 auto 16px;
+    margin:0 auto 24px;
   }
   .features-eyebrow{
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:700;
-    font-size:10px;
+    font-size:11px;
     letter-spacing:.14em;
     text-transform:uppercase;
     color:var(--green-700);
-    margin:0 0 6px;
+    margin:0 0 8px;
   }
   .features-head h2{
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:800;
-    font-size:18px;
+    font-size:22px;
     letter-spacing:-0.01em;
     margin:0;
     color:var(--ink);
@@ -222,44 +196,39 @@
   .feature-grid{
     display:grid;
     grid-template-columns:repeat(4, 1fr);
-    gap:14px;
+    gap:18px;
   }
   .feature{
     background:var(--card);
     border:1px solid var(--line);
-    border-top:3px solid var(--line);
-    border-radius:18px;
-    box-shadow:0 3px 10px rgba(36,31,26,0.05);
-    padding:16px 18px 18px;
+    border-top:3px solid var(--top-color, var(--maroon-700));
+    border-radius:12px;
+    padding:22px 20px 22px;
     display:flex;
     flex-direction:column;
-    gap:8px;
+    gap:12px;
     opacity:0;
     animation:fadeInUp .6s ease both;
-    transition:transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease, background .2s ease;
+    box-shadow:0 2px 10px rgba(60,40,20,0.05);
+    transition:transform .18s ease, box-shadow .18s ease;
   }
   .feature:hover{
-    background:var(--paper-2);
-    transform:translateY(-3px);
-    box-shadow:0 10px 22px rgba(36,31,26,0.09);
+    transform:translateY(-4px);
+    box-shadow:0 12px 22px rgba(60,40,20,0.10);
   }
-  .feature.f-attendance{ border-top-color:var(--maroon-700); }
-  .feature.f-lookup{ border-top-color:var(--blue-700); }
-  .feature.f-tracking{ border-top-color:var(--green-700); }
-  .feature.f-mgmt{ border-top-color:var(--gold-700); }
-  .feature:nth-child(1){ animation-delay:.05s; }
-  .feature:nth-child(2){ animation-delay:.12s; }
-  .feature:nth-child(3){ animation-delay:.19s; }
-  .feature:nth-child(4){ animation-delay:.26s; }
+  .feature:nth-child(1){ animation-delay:.05s; --top-color:var(--maroon-700); }
+  .feature:nth-child(2){ animation-delay:.12s; --top-color:var(--blue-700); }
+  .feature:nth-child(3){ animation-delay:.19s; --top-color:var(--green-700); }
+  .feature:nth-child(4){ animation-delay:.26s; --top-color:var(--gold-700); }
   .feature-icon{
-    width:30px;
-    height:30px;
-    border-radius:8px;
+    width:34px;
+    height:34px;
+    border-radius:9px;
     display:flex;
     align-items:center;
     justify-content:center;
   }
-  .feature-icon svg{ width:15px; height:15px; }
+  .feature-icon svg{ width:17px; height:17px; }
   .feature.f-attendance .feature-icon{ background:rgba(122,12,30,0.09); color:var(--maroon-700); }
   .feature.f-lookup .feature-icon{ background:rgba(19,78,143,0.09); color:var(--blue-700); }
   .feature.f-tracking .feature-icon{ background:rgba(26,107,63,0.09); color:var(--green-700); }
@@ -267,40 +236,28 @@
   .feature h3{
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:700;
-    font-size:13px;
+    font-size:14px;
     margin:0;
     color:var(--ink);
   }
   .feature p{
-    font-size:11.5px;
-    line-height:1.4;
+    font-size:12px;
+    line-height:1.5;
     color:var(--muted);
     margin:0;
   }
 
   /* ---------- Footer ---------- */
   footer{
-    flex:0 0 auto;
-    border-top:1px solid var(--line);
-    padding-top:12px;
-    margin-top:16px;
-  }
-  .footer-inner{
     text-align:center;
+    margin-top:28px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
   }
-  .footer-inner .line1{
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:700;
-    font-size:10.5px;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color:var(--ink);
-    margin-bottom:4px;
-  }
-  .footer-inner .line2{
-    font-size:10px;
+  footer .line2{
+    font-size:11px;
     color:var(--muted);
-    line-height:1.5;
+    letter-spacing:.02em;
   }
 
   @keyframes fadeInUp{
@@ -310,25 +267,24 @@
 
   /* ---------- Responsive ---------- */
   @media (max-width:900px){
-    body{ height:auto; overflow:auto; }
-    .page{ padding:24px 20px; }
-    .hero{ grid-template-columns:1fr; text-align:center; gap:20px; }
-    .hero-copy{ order:2; }
+    body{ height:auto; overflow:auto; align-items:flex-start; padding:40px 0; }
+    .hero{ grid-template-columns:1fr; text-align:center; gap:26px; }
+    .hero-copy{ order:2; display:flex; flex-direction:column; align-items:center; }
     .hero-art{ order:1; }
     .hero-art svg{ max-height:260px; }
     .hero-desc{ margin-left:auto; margin-right:auto; }
-    .hero-actions{ justify-content:center; }
+    .hero-meta{ justify-content:center; }
     .feature-grid{ grid-template-columns:1fr 1fr; }
   }
   @media (max-width:520px){
-    h1{ font-size:30px; }
+    h1{ font-size:28px; }
     .feature-grid{ grid-template-columns:1fr; }
   }
-  @media (max-height:680px) and (min-width:901px){
-    .hero-desc{ display:none; }
-  }
- }
- to{ opacity:1; transform:scale(1); } }
+
+  ::view-transition-old(root){ animation: bsoa-fade-out .32s cubic-bezier(.4,0,1,1) forwards; }
+  ::view-transition-new(root){ animation: bsoa-fade-in .42s cubic-bezier(.16,1,.3,1) forwards; }
+  @keyframes bsoa-fade-out{ to{ opacity:0; transform:scale(1.03); } }
+  @keyframes bsoa-fade-in{ from{ opacity:0; transform:scale(.97); } to{ opacity:1; transform:scale(1); } }
 
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{
@@ -336,32 +292,6 @@
       animation-iteration-count:1 !important;
       transition-duration:.001ms !important;
     }
-  }
-
-  /* ---------- Portal click transition ---------- */
-  .portal-overlay{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:9999;
-  }
-  .portal-overlay .ring{
-    position:absolute;
-    width:26px;
-    height:26px;
-    margin-left:-13px;
-    margin-top:-13px;
-    border-radius:50%;
-    background:linear-gradient(135deg, var(--maroon-700), var(--maroon-600));
-    transform:scale(0);
-    opacity:0;
-  }
-  .portal-overlay.active .ring{
-    animation:portalExpand .5s cubic-bezier(.2,.8,.2,1) forwards;
-  }
-  @keyframes portalExpand{
-    0%{ transform:scale(0); opacity:.92; }
-    100%{ transform:scale(110); opacity:1; }
   }
 </style>
 </head>
@@ -371,95 +301,176 @@
 
   <section class="hero">
     <div class="hero-copy">
-      <p class="eyebrow">Internal Academic Monitoring</p>
+      <div class="hero-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>
+        Academic Monitoring System
+      </div>
       <h1>BSOAOUMN 2-7<span>Student Portal</span></h1>
-      <p class="hero-sub">Academic Monitoring System</p>
+      <div class="hero-rule"></div>
       <p class="hero-desc">A centralized platform designed exclusively for BSOAOUMN 2-7 students and class officers for attendance monitoring, activity tracking, student records, and internal academic management.</p>
       <div class="hero-actions">
         <a class="btn-primary" href="index-lite.html">
           Enter Portal
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
         </a>
-        <div class="hero-meta">
-          <span>Secure</span><span class="dot">&middot;</span>
-          <span>Reliable</span><span class="dot">&middot;</span>
-          <span>Internal Use Only</span>
-        </div>
+      </div>
+      <div class="hero-meta">
+        <span class="item"><svg class="mi-secure" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>Secure</span>
+        <span class="item"><svg class="mi-reliable" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.3 2.3L15.5 9.5"/></svg>Reliable</span>
+        <span class="item"><svg class="mi-internal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Internal Use Only</span>
       </div>
     </div>
 
     <div class="hero-art">
-      <svg viewBox="0 0 380 340" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 520 400" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="deskTop" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#fffdf8"/>
-            <stop offset="1" stop-color="#f0e9d8"/>
-          </linearGradient>
-          <linearGradient id="lidGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#9a1128"/>
-            <stop offset="1" stop-color="#6a0a19"/>
+          <linearGradient id="baseGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#e4d9b9"/>
+            <stop offset="1" stop-color="#c9bb90"/>
           </linearGradient>
           <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#fdfbf4"/>
-            <stop offset="1" stop-color="#f3ecd9"/>
+            <stop offset="0" stop-color="#fffdf8"/>
+            <stop offset="1" stop-color="#f6efdd"/>
           </linearGradient>
-          <linearGradient id="baseGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#d9cfb2"/>
-            <stop offset="1" stop-color="#c3b895"/>
+          <linearGradient id="potGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#c26b4a"/>
+            <stop offset="1" stop-color="#9c4c2c"/>
           </linearGradient>
+          <linearGradient id="bookA" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#9a1128"/>
+            <stop offset="1" stop-color="#6f0c1a"/>
+          </linearGradient>
+          <linearGradient id="bookB" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#8a6d1f"/>
+            <stop offset="1" stop-color="#6f5717"/>
+          </linearGradient>
+          <linearGradient id="bookC" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#134e8f"/>
+            <stop offset="1" stop-color="#0d3a6b"/>
+          </linearGradient>
+          <radialGradient id="medalGrad" cx="0.35" cy="0.3" r="0.8">
+            <stop offset="0" stop-color="#e8c874"/>
+            <stop offset="1" stop-color="#a97f24"/>
+          </radialGradient>
         </defs>
 
-        <g class="art-piece" style="animation-delay:0s">
-          <ellipse cx="190" cy="292" rx="140" ry="18" fill="#7a0c1e" opacity="0.06"/>
-          <polygon points="190,150 320,205 190,260 60,205" fill="url(#deskTop)" stroke="#e7e0d0" stroke-width="1.5"/>
-          <polygon points="140,196 240,196 262,207 118,207" fill="url(#baseGrad)"/>
-          <polygon points="118,207 262,207 262,213 118,213" fill="#b3a780"/>
+        <!-- soft architectural blueprint backdrop -->
+        <g opacity="0.14" stroke="#7a0c1e" stroke-width="1.3" fill="none">
+          <rect x="330" y="40" width="150" height="120" />
+          <line x1="330" y1="70" x2="480" y2="70"/>
+          <line x1="330" y1="100" x2="480" y2="100"/>
+          <line x1="330" y1="130" x2="480" y2="130"/>
+          <line x1="365" y1="40" x2="365" y2="160"/>
+          <line x1="400" y1="40" x2="400" y2="160"/>
+          <line x1="435" y1="40" x2="435" y2="160"/>
+          <polygon points="330,40 405,10 480,40"/>
+        </g>
+        <g opacity="0.16" fill="#8a6d1f">
+          <circle cx="452" cy="52" r="1.6"/><circle cx="464" cy="52" r="1.6"/><circle cx="476" cy="52" r="1.6"/>
+          <circle cx="452" cy="64" r="1.6"/><circle cx="464" cy="64" r="1.6"/><circle cx="476" cy="64" r="1.6"/>
+          <circle cx="452" cy="76" r="1.6"/><circle cx="464" cy="76" r="1.6"/><circle cx="476" cy="76" r="1.6"/>
         </g>
 
-        <g class="art-piece" style="animation-delay:.09s">
+        <!-- ground shadow -->
+        <ellipse cx="260" cy="355" rx="200" ry="17" fill="#7a0c1e" opacity="0.07"/>
+
+        <!-- potted plant -->
+        <g class="art-float">
+          <path d="M100 250c-16-9-21-29-12-44 4 16 12 27 12 44z" fill="#1a6b3f"/>
+          <path d="M100 250c16-12 18-34 5-49-2 18-9 33-5 49z" fill="#2f8f5c"/>
+          <path d="M100 250c-4-18 2-36 16-47-7 16-11 33-16 47z" fill="#256e46"/>
+          <path d="M84 250h32l-3 31a6 6 0 0 1-6 5H93a6 6 0 0 1-6-5z" fill="url(#potGrad)"/>
+          <rect x="81" y="246" width="38" height="8" rx="4" fill="#9c4c2c"/>
+        </g>
+
+        <!-- books + medallion (right side) -->
+        <g class="art-float-slow">
+          <rect x="392" y="258" width="96" height="17" rx="4" fill="url(#bookC)"/>
+          <rect x="400" y="241" width="82" height="17" rx="4" fill="url(#bookB)"/>
+          <rect x="408" y="224" width="66" height="17" rx="4" fill="url(#bookA)"/>
+          <circle cx="446" cy="215" r="19" fill="url(#medalGrad)" stroke="#8a6d1f" stroke-width="1"/>
+          <circle cx="446" cy="215" r="12" fill="none" stroke="#fff7e0" stroke-width="1.2" opacity="0.7"/>
+          <path d="M446 207v16M439 215h14" stroke="#fff7e0" stroke-width="1.4" opacity="0.85"/>
+        </g>
+
+        <!-- notebook + pen -->
+        <g class="art-float-rev">
+          <rect x="356" y="298" width="92" height="62" rx="6" fill="#fffdf8" stroke="#e7e0d0" stroke-width="1.5"/>
+          <rect x="356" y="298" width="10" height="62" rx="3" fill="#9a1128"/>
+          <line x1="378" y1="313" x2="436" y2="313" stroke="#e7e0d0" stroke-width="1.5"/>
+          <line x1="378" y1="326" x2="436" y2="326" stroke="#e7e0d0" stroke-width="1.5"/>
+          <line x1="378" y1="339" x2="420" y2="339" stroke="#e7e0d0" stroke-width="1.5"/>
+          <g transform="rotate(28 420 320)">
+            <rect x="405" y="317" width="58" height="6" rx="3" fill="#241f1a"/>
+            <polygon points="463,317 471,320 463,323" fill="#8a6d1f"/>
+          </g>
+        </g>
+
+        <!-- laptop -->
+        <g>
+          <!-- keyboard base -->
+          <polygon points="118,318 402,318 428,335 92,335" fill="url(#baseGrad)"/>
+          <polygon points="92,335 428,335 428,342 92,342" fill="#a9976a"/>
+          <polygon points="130,323 390,323 383,330 137,330" fill="#f1e6c4"/>
+
+          <!-- lid / bezel -->
           <g class="art-float">
-            <polygon points="140,196 240,196 236,120 144,120" fill="url(#lidGrad)"/>
-            <polygon points="150,190 230,190 227,128 153,128" fill="url(#screenGrad)"/>
-            <rect x="160" y="136" width="58" height="6" rx="2" fill="#7a0c1e" opacity="0.55"/>
-            <rect x="160" y="148" width="40" height="4" rx="2" fill="#134e8f" opacity="0.4"/>
-            <g fill="none" stroke="#1a6b3f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M161 160 165 164 172 156"/>
-              <path d="M161 170 165 174 172 166"/>
-              <path d="M161 180 165 184 172 176"/>
+            <rect x="112" y="98" width="296" height="222" rx="14" fill="#2a221d"/>
+            <rect x="112" y="98" width="296" height="222" rx="14" fill="none" stroke="#40352c" stroke-width="1"/>
+            <circle cx="260" cy="109" r="2.2" fill="#5b4d40"/>
+
+            <!-- screen -->
+            <rect x="124" y="120" width="272" height="188" rx="4" fill="url(#screenGrad)"/>
+
+            <!-- sidebar -->
+            <rect x="124" y="120" width="34" height="188" fill="#7a0c1e"/>
+            <g fill="#fdeee0">
+              <rect x="136" y="136" width="12" height="12" rx="3" fill="#fff" opacity="0.95"/>
+              <rect x="138" y="160" width="8" height="8" rx="2" opacity="0.55"/>
+              <rect x="138" y="180" width="8" height="8" rx="2" opacity="0.55"/>
+              <rect x="138" y="200" width="8" height="8" rx="2" opacity="0.55"/>
+              <rect x="138" y="220" width="8" height="8" rx="2" opacity="0.55"/>
+              <rect x="138" y="288" width="8" height="8" rx="2" opacity="0.45"/>
             </g>
-            <rect x="178" y="158" width="38" height="3.5" rx="1.5" fill="#241f1a" opacity="0.30"/>
-            <rect x="178" y="168" width="30" height="3.5" rx="1.5" fill="#241f1a" opacity="0.30"/>
-            <rect x="178" y="178" width="34" height="3.5" rx="1.5" fill="#241f1a" opacity="0.30"/>
-          </g>
-          <polygon points="150,199 230,199 226,192 154,192" fill="#eadfc0"/>
-        </g>
 
-        <g class="art-piece" style="animation-delay:.16s">
-          <g class="art-float-slow">
-            <rect x="248" y="96" width="92" height="56" rx="12" fill="#fffdf7" stroke="#e7e0d0" stroke-width="1.5"/>
-            <circle cx="270" cy="118" r="10" fill="rgba(19,78,143,0.12)"/>
-            <circle cx="270" cy="118" r="4.5" fill="#134e8f"/>
-            <path d="M263 132c0-5 4-8 7-8s7 3 7 8" fill="none" stroke="#134e8f" stroke-width="2" stroke-linecap="round"/>
-            <rect x="288" y="110" width="38" height="4" rx="2" fill="#134e8f" opacity="0.5"/>
-            <rect x="288" y="120" width="30" height="3.5" rx="1.5" fill="#241f1a" opacity="0.25"/>
-            <rect x="288" y="128" width="34" height="3.5" rx="1.5" fill="#241f1a" opacity="0.25"/>
-          </g>
-        </g>
+            <!-- main content -->
+            <text x="172" y="145" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="12" fill="#241f1a">Welcome to the Portal</text>
+            <text x="172" y="159" font-family="'Inter', sans-serif" font-weight="500" font-size="8.5" fill="#8a8078">What would you like to do today?</text>
 
-        <g class="art-piece" style="animation-delay:.22s">
-          <g class="art-float-rev">
-            <rect x="34" y="150" width="82" height="60" rx="12" fill="#fffdf7" stroke="#e7e0d0" stroke-width="1.5"/>
-            <rect x="50" y="188" width="9" height="14" rx="2" fill="#8a6d1f" opacity="0.55"/>
-            <rect x="64" y="178" width="9" height="24" rx="2" fill="#1a6b3f" opacity="0.6"/>
-            <rect x="78" y="170" width="9" height="32" rx="2" fill="#7a0c1e" opacity="0.55"/>
-            <rect x="92" y="182" width="9" height="20" rx="2" fill="#134e8f" opacity="0.5"/>
-          </g>
-        </g>
-
-        <g class="art-piece" style="animation-delay:.3s">
-          <g class="art-float">
-            <circle cx="216" cy="88" r="18" fill="#1a6b3f" opacity="0.95"/>
-            <path d="M208 88l5.5 5.5L226 81" fill="none" stroke="#fffdf7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- 4 tool tiles -->
+            <g font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="7.4" text-anchor="middle">
+              <g>
+                <rect x="172" y="176" width="56" height="54" rx="8" fill="#fdf1f0" stroke="#f0d8d6" stroke-width="1"/>
+                <rect x="188" y="186" width="24" height="24" rx="6" fill="#7a0c1e"/>
+                <path d="M194 198h12M200 192v12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                <text x="200" y="221" fill="#7a0c1e">Weekly</text>
+                <text x="200" y="229" fill="#7a0c1e">Attendance</text>
+              </g>
+              <g>
+                <rect x="234" y="176" width="56" height="54" rx="8" fill="#eef4fa" stroke="#d7e5f2" stroke-width="1"/>
+                <rect x="250" y="186" width="24" height="24" rx="6" fill="#134e8f"/>
+                <circle cx="260" cy="196" r="4" fill="none" stroke="#fff" stroke-width="1.6"/>
+                <line x1="263" y1="199" x2="267" y2="203" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+                <text x="262" y="221" fill="#134e8f">Student</text>
+                <text x="262" y="229" fill="#134e8f">Lookup</text>
+              </g>
+              <g>
+                <rect x="296" y="176" width="56" height="54" rx="8" fill="#edf6f0" stroke="#d5e9db" stroke-width="1"/>
+                <rect x="312" y="186" width="24" height="24" rx="6" fill="#1a6b3f"/>
+                <path d="M318 198l3 3 7-7" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <text x="324" y="221" fill="#1a6b3f">Mark My</text>
+                <text x="324" y="229" fill="#1a6b3f">Activity</text>
+              </g>
+              <g>
+                <rect x="358" y="176" width="30" height="54" rx="8" fill="#faf4e6" stroke="#ecdfb9" stroke-width="1"/>
+                <rect x="365" y="186" width="16" height="16" rx="5" fill="#8a6d1f"/>
+                <rect x="368" y="196" width="2.4" height="4" fill="#fff"/>
+                <rect x="372" y="193" width="2.4" height="7" fill="#fff"/>
+                <rect x="376" y="190" width="2.4" height="10" fill="#fff"/>
+                <text x="373" y="221" fill="#8a6d1f" font-size="6.6">Class</text>
+                <text x="373" y="229" fill="#8a6d1f" font-size="6.6">Overview</text>
+              </g>
+            </g>
           </g>
         </g>
       </svg>
@@ -468,7 +479,7 @@
 
   <section class="features">
     <div class="features-head">
-      <p class="features-eyebrow">What's inside</p>
+      <p class="features-eyebrow">Everything you need</p>
       <h2>One portal. Four essential tools.</h2>
     </div>
 
@@ -518,66 +529,10 @@
   </section>
 
   <footer>
-    <div class="footer-inner">
-      <div class="line1">Student Portal</div>
-      <div class="line2">Version 6.0.0 &middot; Designed exclusively for internal academic monitoring.</div>
-      <div class="line2">&copy; 2026 BSOAOUMN 2-7</div>
-    </div>
+    <div class="line2">Student Portal &nbsp;&middot;&nbsp; Internal Academic Monitoring &nbsp;&middot;&nbsp; Version 6.0.1 &nbsp;&middot;&nbsp; &copy; 2026</div>
   </footer>
 
 </div>
-
-<div class="portal-overlay" id="portalOverlay"><div class="ring" id="portalRing"></div></div>
-
-<script>
-  // Magnetic CTA button — pulls gently toward the cursor when nearby.
-  (function(){
-    var btn = document.querySelector('.btn-primary');
-    if (!btn) return;
-    var ACTIVATION_RADIUS = 55; // px beyond the button's own bounds
-    var STRENGTH = 0.35;
-
-    document.addEventListener('mousemove', function(e){
-      var rect = btn.getBoundingClientRect();
-      var cx = rect.left + rect.width / 2;
-      var cy = rect.top + rect.height / 2;
-      var dx = e.clientX - cx;
-      var dy = e.clientY - cy;
-      var maxDist = Math.max(rect.width, rect.height) / 2 + ACTIVATION_RADIUS;
-      var dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < maxDist){
-        var pull = (1 - dist / maxDist) * STRENGTH;
-        btn.style.transform = 'translate(' + (dx * pull).toFixed(1) + 'px, ' + (dy * pull - 2).toFixed(1) + 'px)';
-      } else {
-        btn.style.transform = '';
-      }
-    });
-  })();
-
-  // Portal-style click transition — a circle expands from the button,
-  // matching the "Enter Portal" name, then navigates once it covers
-  // the screen. Respects reduced-motion by just navigating instantly.
-  (function(){
-    var btn = document.querySelector('.btn-primary');
-    var overlay = document.getElementById('portalOverlay');
-    var ring = document.getElementById('portalRing');
-    if (!btn || !overlay || !ring) return;
-
-    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced) return; // let the link navigate normally, no overlay
-
-    btn.addEventListener('click', function(e){
-      e.preventDefault();
-      var href = btn.getAttribute('href');
-      var rect = btn.getBoundingClientRect();
-      ring.style.left = (rect.left + rect.width / 2) + 'px';
-      ring.style.top = (rect.top + rect.height / 2) + 'px';
-      overlay.classList.add('active');
-      setTimeout(function(){ window.location.href = href; }, 460);
-    });
-  })();
-</script>
 
 </body>
 </html>
