@@ -218,13 +218,15 @@
   a.card{
     display:flex;
     flex-direction:column;
+    align-items:center;
+    text-align:center;
     text-decoration:none;
     color:var(--ink);
     background:var(--card);
     border:1px solid var(--line);
     border-top-width:5px; /* Creates an executive color tab */
     border-radius:12px;
-    padding:24px 20px 18px;
+    padding:24px 22px;
     min-height:195px;
     justify-content:flex-start;
     box-shadow:0 6px 18px rgba(36,31,26,0.10), 0 2px 6px rgba(36,31,26,0.07);
@@ -365,6 +367,7 @@
 
   .card .title-row{
     margin-bottom:6px;
+    text-align:center;
   }
   .card .title{
     font-family:'Plus Jakarta Sans', sans-serif;
@@ -380,39 +383,13 @@
     font-weight:400;
     color:#4f4f4f;
     transition:color .2s ease;
-    flex:1 0 auto;
+    text-align:center;
   }
 
   .card.attendance:hover .title{ color:var(--maroon-700); }
   .card.lookup:hover .title{ color:var(--blue-700); }
   .card.mark:hover .title{ color:var(--green-700); }
   .card.overview:hover .title{ color:var(--gold-700); }
-
-  .card-footer{
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-    gap:6px;
-    margin-top:16px;
-    padding-top:12px;
-    border-top:1px solid var(--line);
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:700;
-    font-size:12px;
-    letter-spacing:.02em;
-    color:#a09b8f;
-    transition:color .2s ease, border-color .2s ease;
-  }
-  .card-footer .arrow{
-    display:inline-block;
-    transition:transform .25s ease;
-  }
-  a.card:hover .card-footer .arrow{ transform:translateX(4px); }
-
-  .card.attendance:hover .card-footer{ color:var(--maroon-700); border-color:rgba(122,12,30,0.25); }
-  .card.lookup:hover .card-footer{ color:var(--blue-700); border-color:rgba(19,78,143,0.25); }
-  .card.mark:hover .card-footer{ color:var(--green-700); border-color:rgba(26,107,63,0.25); }
-  .card.overview:hover .card-footer{ color:var(--gold-700); border-color:rgba(138,109,31,0.25); }
 
   .disclaimer{
     font-size:12px;
@@ -504,7 +481,6 @@
         <div class="title">Weekly Attendance</div>
       </div>
       <div class="desc">Submit your name, student number, date, and subject for the week.</div>
-      <div class="card-footer">Open <span class="arrow">&rarr;</span></div>
     </a>
 
     <a class="card lookup" href="lookup.html">
@@ -517,7 +493,6 @@
         <div class="title">Student Lookup</div>
       </div>
       <div class="desc">Search a student number to view grades, enrollment, attendance records, and activities.</div>
-      <div class="card-footer">Open <span class="arrow">&rarr;</span></div>
     </a>
 
     <a class="card mark" href="mark_activity.html">
@@ -530,7 +505,6 @@
         <div class="title">Mark My Activity</div>
       </div>
       <div class="desc">Confirm that you've completed an activity for a subject.</div>
-      <div class="card-footer">Open <span class="arrow">&rarr;</span></div>
     </a>
 
     <a class="card overview" href="overview.html">
@@ -543,7 +517,6 @@
         <div class="title">Class Overview</div>
       </div>
       <div class="desc">A snapshot of attendance and activity completion for officers.</div>
-      <div class="card-footer">Open <span class="arrow">&rarr;</span></div>
     </a>
   </div>
 </div>
