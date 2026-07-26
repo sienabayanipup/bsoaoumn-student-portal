@@ -51,61 +51,7 @@
     max-width:1160px;
     width:100%;
     margin:0 auto;
-    padding:1.6vh 28px 1.4vh;
-  }
-
-  /* ---------- Header ---------- */
-  header{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-    flex:0 0 auto;
-  }
-  .seal{
-    width:38px;
-    height:38px;
-    margin:0 auto 8px;
-    border-radius:50%;
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:800;
-    font-size:10px;
-    letter-spacing:.03em;
-    color:#fff7ea;
-    background:conic-gradient(from 220deg, #8f1226, #b3213c, #7a0c1e, #5c0916, #8f1226);
-    box-shadow:0 6px 16px rgba(122,12,30,0.30), inset 0 -3px 6px rgba(0,0,0,0.35), inset 0 2px 3px rgba(255,255,255,0.35);
-    text-shadow:0 1px 1px rgba(0,0,0,0.45);
-  }
-  .seal::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:50%;
-    padding:1.5px;
-    background:linear-gradient(155deg, rgba(255,255,255,0.9), rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, rgba(255,255,255,0.5));
-    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor;
-    mask-composite:exclude;
-  }
-  .portal-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:700;
-    font-size:10px;
-    letter-spacing:.10em;
-    text-transform:uppercase;
-    color:#fff;
-    background:linear-gradient(135deg, var(--maroon-700), var(--maroon-600));
-    border:1px solid rgba(122,12,30,0.25);
-    border-radius:999px;
-    padding:5px 14px;
-    box-shadow:0 4px 12px rgba(122,12,30,0.20);
+    padding:3.2vh 28px 1.4vh;
   }
 
   /* ---------- Hero ---------- */
@@ -113,7 +59,7 @@
     flex:1 1 auto;
     min-height:0;
     display:grid;
-    grid-template-columns:1.05fr 0.95fr;
+    grid-template-columns:1fr 1fr;
     align-items:center;
     gap:clamp(20px, 4vw, 48px);
     padding:0.5vh 0;
@@ -150,14 +96,14 @@
     font-weight:700;
     font-size:13.5px;
     color:var(--gold-700);
-    margin:12px 0 10px;
+    margin:14px 0 12px;
   }
   .hero-desc{
     font-size:14px;
-    line-height:1.55;
+    line-height:1.65;
     color:var(--muted);
     max-width:460px;
-    margin:0 0 20px;
+    margin:0 0 24px;
   }
   .hero-actions{
     display:flex;
@@ -176,14 +122,14 @@
     background:linear-gradient(135deg, var(--maroon-700), var(--maroon-600));
     border:none;
     border-radius:10px;
-    padding:12px 22px;
+    padding:13px 26px;
     text-decoration:none;
-    box-shadow:0 8px 20px rgba(122,12,30,0.28);
-    transition:transform .18s ease, box-shadow .18s ease;
+    box-shadow:0 6px 16px rgba(122,12,30,0.22);
+    transition:transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease;
   }
   .btn-primary:hover{
     transform:translateY(-2px);
-    box-shadow:0 12px 26px rgba(122,12,30,0.34);
+    box-shadow:0 10px 22px rgba(122,12,30,0.28);
   }
   .btn-primary svg{ transition:transform .18s ease; }
   .btn-primary:hover svg{ transform:translateX(3px); }
@@ -205,13 +151,13 @@
     align-items:center;
     justify-content:center;
     opacity:0;
-    animation:fadeInUp .8s ease .18s forwards;
+    animation:fadeInUp .7s ease .18s forwards;
     max-height:100%;
   }
   .hero-art svg{
     width:100%;
     height:auto;
-    max-height:26vh;
+    max-height:36vh;
   }
   .art-float{ animation:artFloat 5s ease-in-out infinite; }
   .art-float-slow{ animation:artFloat 6.5s ease-in-out infinite; }
@@ -228,11 +174,12 @@
   /* ---------- Feature section ---------- */
   .features{
     flex:0 0 auto;
+    margin-top:4.2vh;
   }
   .features-head{
     text-align:center;
     max-width:520px;
-    margin:0 auto 12px;
+    margin:0 auto 16px;
   }
   .features-eyebrow{
     font-family:'Plus Jakarta Sans', sans-serif;
@@ -254,23 +201,31 @@
   .feature-grid{
     display:grid;
     grid-template-columns:repeat(4, 1fr);
-    gap:1px;
-    background:var(--line);
-    border:1px solid var(--line);
-    border-radius:12px;
-    overflow:hidden;
+    gap:14px;
   }
   .feature{
     background:var(--card);
-    padding:14px 16px 16px;
+    border:1px solid var(--line);
+    border-top:3px solid var(--line);
+    border-radius:18px;
+    box-shadow:0 3px 10px rgba(36,31,26,0.05);
+    padding:16px 18px 18px;
     display:flex;
     flex-direction:column;
     gap:8px;
     opacity:0;
     animation:fadeInUp .6s ease both;
-    transition:background .2s ease;
+    transition:transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease, background .2s ease;
   }
-  .feature:hover{ background:var(--paper-2); }
+  .feature:hover{
+    background:var(--paper-2);
+    transform:translateY(-3px);
+    box-shadow:0 10px 22px rgba(36,31,26,0.09);
+  }
+  .feature.f-attendance{ border-top-color:var(--maroon-700); }
+  .feature.f-lookup{ border-top-color:var(--blue-700); }
+  .feature.f-tracking{ border-top-color:var(--green-700); }
+  .feature.f-mgmt{ border-top-color:var(--gold-700); }
   .feature:nth-child(1){ animation-delay:.05s; }
   .feature:nth-child(2){ animation-delay:.12s; }
   .feature:nth-child(3){ animation-delay:.19s; }
@@ -306,16 +261,25 @@
   footer{
     flex:0 0 auto;
     border-top:1px solid var(--line);
-    padding-top:8px;
-    margin-top:10px;
+    padding-top:12px;
+    margin-top:16px;
   }
   .footer-inner{
     text-align:center;
   }
-  .footer-inner .line2{
+  .footer-inner .line1{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:700;
     font-size:10.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink);
+    margin-bottom:4px;
+  }
+  .footer-inner .line2{
+    font-size:10px;
     color:var(--muted);
-    line-height:1.4;
+    line-height:1.5;
   }
 
   @keyframes fadeInUp{
@@ -330,7 +294,7 @@
     .hero{ grid-template-columns:1fr; text-align:center; gap:20px; }
     .hero-copy{ order:2; }
     .hero-art{ order:1; }
-    .hero-art svg{ max-height:200px; }
+    .hero-art svg{ max-height:260px; }
     .hero-desc{ margin-left:auto; margin-right:auto; }
     .hero-actions{ justify-content:center; }
     .feature-grid{ grid-template-columns:1fr 1fr; }
@@ -361,11 +325,6 @@
 <body>
 
 <div class="page">
-
-  <header>
-    <div class="seal"><span>PUP</span></div>
-    <div class="portal-badge">BSOAOUMN 2-7 Student Portal</div>
-  </header>
 
   <section class="hero">
     <div class="hero-copy">
@@ -458,7 +417,7 @@
   <section class="features">
     <div class="features-head">
       <p class="features-eyebrow">What's inside</p>
-      <h2>Four tools, one workspace</h2>
+      <h2>One portal. Four essential tools.</h2>
     </div>
 
     <div class="feature-grid">
@@ -508,7 +467,9 @@
 
   <footer>
     <div class="footer-inner">
-      <div class="line2">&copy; 2026 BSOAOUMN 2-7 &middot; Designed exclusively for internal academic monitoring.</div>
+      <div class="line1">BSOAOUMN 2-7 Student Portal</div>
+      <div class="line2">Version 4.0 &middot; Designed exclusively for internal academic monitoring.</div>
+      <div class="line2">&copy; 2026 BSOAOUMN 2-7</div>
     </div>
   </footer>
 
