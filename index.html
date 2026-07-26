@@ -50,9 +50,10 @@
     border-radius:50%;
     opacity:0.04;
     pointer-events:none;
+    transition:transform .4s ease-out;
   }
-  body::before{ width:420px; height:420px; top:-120px; left:-140px; background:var(--maroon-700); }
-  body::after{ width:360px; height:360px; bottom:-100px; right:-120px; background:var(--blue-700); }
+  body::before{ width:420px; height:420px; top:-120px; left:-140px; background:var(--maroon-700); transform:translate(var(--px,0), var(--py,0)); }
+  body::after{ width:360px; height:360px; bottom:-100px; right:-120px; background:var(--blue-700); transform:translate(calc(var(--px,0) * -1), calc(var(--py,0) * -1)); }
 
   .wrap{
     width:100%;
@@ -138,10 +139,45 @@
     margin:0 0 18px;
   }
 
+  .status-bar{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:600;
+    font-size:11px;
+    letter-spacing:.03em;
+    color:var(--muted);
+    background:rgba(255,255,255,0.5);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:5px 14px;
+    margin:0 0 14px;
+  }
+  .status-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#2f8f5c;
+    box-shadow:0 0 0 0 rgba(47,143,92,0.5);
+    animation:statusPulse 2s infinite;
+  }
+  @keyframes statusPulse{
+    0%{ box-shadow:0 0 0 0 rgba(47,143,92,0.45); }
+    70%{ box-shadow:0 0 0 6px rgba(47,143,92,0); }
+    100%{ box-shadow:0 0 0 0 rgba(47,143,92,0); }
+  }
+  .status-sep{ opacity:.4; }
+  #liveClock{
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+
   .cards{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:16px;
+    perspective:1200px;
   }
   
   a.card{
@@ -155,19 +191,32 @@
     border-radius:12px;
     padding:20px 18px;
     box-shadow:0 6px 18px rgba(36,31,26,0.10), 0 2px 6px rgba(36,31,26,0.07);
-    transition:transform .25s cubic-bezier(.2,.8,.3,1.15), box-shadow .25s ease, border-color .2s ease;
+    transition:transform .35s cubic-bezier(.2,.8,.3,1.15), box-shadow .35s ease, border-color .2s ease;
     cursor:pointer;
     position:relative;
     overflow:hidden;
     animation:fadeInUp .7s ease both;
+    transform-style:preserve-3d;
+    will-change:transform;
   }
+
+  a.card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.55), transparent 42%);
+    opacity:0;
+    transition:opacity .3s ease;
+    pointer-events:none;
+  }
+  a.card:hover::before{ opacity:1; }
 
   a.card:hover{
     transform:translateY(-9px) scale(1.015);
     box-shadow:0 16px 34px rgba(36,31,26,0.16), 0 4px 10px rgba(36,31,26,0.10);
   }
   a.card:active{
-    transform:translateY(-3px) scale(1.005);
+    transform:translateY(-3px) scale(1.005) !important;
   }
 
   /* Specific color themes per card, incl. matching hover glow */
@@ -266,21 +315,16 @@
   }
   /* ---- Zoom + fade page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
   ::view-transition-old(root){
-    animation:
-      bsoa-fade-out 140ms ease-out forwards,
-      bsoa-zoom-out 200ms ease-out forwards;
+    animation: bsoa-fade-out .32s cubic-bezier(.4,0,1,1) forwards;
   }
   ::view-transition-new(root){
-    animation: bsoa-fade-in 260ms cubic-bezier(0,0,.2,1) forwards;
+    animation: bsoa-fade-in .42s cubic-bezier(.16,1,.3,1) forwards;
   }
   @keyframes bsoa-fade-out{
-    to{ opacity:0; }
-  }
-  @keyframes bsoa-zoom-out{
-    to{ transform:scale(1.02); }
+    to{ opacity:0; transform:scale(1.03); }
   }
   @keyframes bsoa-fade-in{
-    from{ opacity:0; transform:scale(.98); }
+    from{ opacity:0; transform:scale(.97); }
     to{ opacity:1; transform:scale(1); }
   }
 </style>
@@ -290,7 +334,13 @@
 <div class="wrap">
   <div class="seal">PUP</div>
   <div class="portal-badge">BSOAOUMN 2-7 Student Portal</div>
-  <h1>Welcome!</h1>
+  <div class="status-bar">
+    <span class="status-dot"></span>
+    <span>System Online</span>
+    <span class="status-sep">&middot;</span>
+    <span id="liveClock">--:--:--</span>
+  </div>
+  <h1 id="greeting">Welcome!</h1>
   <p class="welcome-sub">Access attendance, activities, and class records using the tools below.</p>
   <p class="prompt">What would you like to do today?</p>
 
@@ -346,6 +396,58 @@
   <div>Version 4.0</div>
   <div>&copy; 2026 BSOAOUMN 2-7</div>
 </div>
+
+<script>
+  // ---- Time-based greeting ----
+  function getGreeting(){
+    const h = new Date().getHours();
+    if (h < 5) return "Working late?";
+    if (h < 12) return "Good morning!";
+    if (h < 18) return "Good afternoon!";
+    return "Good evening!";
+  }
+  document.getElementById('greeting').textContent = getGreeting();
+
+  // ---- Live ticking clock ----
+  function updateClock(){
+    const now = new Date();
+    document.getElementById('liveClock').textContent = now.toLocaleTimeString('en-US', {
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ---- 3D tilt cards with a mouse-following shine ----
+  const isTouch = window.matchMedia('(hover: none)').matches;
+  if (!isTouch){
+    document.querySelectorAll('a.card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2, cy = rect.height / 2;
+        const rotateX = ((y - cy) / cy) * -6;
+        const rotateY = ((x - cx) / cx) * 6;
+        card.style.transform =
+          `perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-9px) scale(1.02)`;
+        card.style.setProperty('--mx', `${(x / rect.width) * 100}%`);
+        card.style.setProperty('--my', `${(y / rect.height) * 100}%`);
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+
+    // Subtle parallax on the background blobs
+    document.addEventListener('mousemove', (e) => {
+      const xPct = (e.clientX / window.innerWidth - 0.5) * 2;
+      const yPct = (e.clientY / window.innerHeight - 0.5) * 2;
+      document.body.style.setProperty('--px', `${xPct * 12}px`);
+      document.body.style.setProperty('--py', `${yPct * 12}px`);
+    });
+  }
+</script>
 
 </body>
 </html>
