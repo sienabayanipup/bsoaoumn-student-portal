@@ -169,6 +169,15 @@
   @keyframes artFloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
   @keyframes artFloatRev{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(5px);} }
 
+  /* Cursor-driven parallax — transform-only, so it stays on the GPU
+     compositor path instead of forcing a repaint every frame. --px/--py
+     are set once via JS on .hero-art and inherited down; each layer just
+     multiplies by its own --depth for a layered feel. */
+  .parallax{
+    transform:translate(calc(var(--px, 0px) * var(--depth, 1)), calc(var(--py, 0px) * var(--depth, 1)));
+    transition:transform .18s ease-out;
+  }
+
   /* ---------- Feature section ---------- */
   .features-head{
     text-align:center;
@@ -279,8 +288,6 @@
     h1{ font-size:28px; }
     .feature-grid{ grid-template-columns:1fr; }
   }
- }
- to{ opacity:1; transform:scale(1); } }
 
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{
@@ -288,6 +295,32 @@
       animation-iteration-count:1 !important;
       transition-duration:.001ms !important;
     }
+  }
+
+  /* ---------- Portal click transition ---------- */
+  .portal-overlay{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9999;
+  }
+  .portal-overlay .ring{
+    position:absolute;
+    width:26px;
+    height:26px;
+    margin-left:-13px;
+    margin-top:-13px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--maroon-700), var(--maroon-600));
+    transform:scale(0);
+    opacity:0;
+  }
+  .portal-overlay.active .ring{
+    animation:portalExpand .5s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes portalExpand{
+    0%{ transform:scale(0); opacity:.92; }
+    100%{ transform:scale(110); opacity:1; }
   }
 </style>
 </head>
@@ -351,7 +384,7 @@
         </defs>
 
         <!-- soft architectural blueprint backdrop -->
-        <g opacity="0.14" stroke="#7a0c1e" stroke-width="1.3" fill="none">
+        <g class="parallax" style="--depth:0.2" opacity="0.14" stroke="#7a0c1e" stroke-width="1.3" fill="none">
           <rect x="330" y="40" width="150" height="120" />
           <line x1="330" y1="70" x2="480" y2="70"/>
           <line x1="330" y1="100" x2="480" y2="100"/>
@@ -371,39 +404,45 @@
         <ellipse cx="260" cy="355" rx="200" ry="17" fill="#7a0c1e" opacity="0.07"/>
 
         <!-- potted plant -->
-        <g class="art-float">
-          <path d="M100 250c-16-9-21-29-12-44 4 16 12 27 12 44z" fill="#1a6b3f"/>
-          <path d="M100 250c16-12 18-34 5-49-2 18-9 33-5 49z" fill="#2f8f5c"/>
-          <path d="M100 250c-4-18 2-36 16-47-7 16-11 33-16 47z" fill="#256e46"/>
-          <path d="M84 250h32l-3 31a6 6 0 0 1-6 5H93a6 6 0 0 1-6-5z" fill="url(#potGrad)"/>
-          <rect x="81" y="246" width="38" height="8" rx="4" fill="#9c4c2c"/>
+        <g class="parallax" style="--depth:1.6">
+          <g class="art-float">
+            <path d="M100 250c-16-9-21-29-12-44 4 16 12 27 12 44z" fill="#1a6b3f"/>
+            <path d="M100 250c16-12 18-34 5-49-2 18-9 33-5 49z" fill="#2f8f5c"/>
+            <path d="M100 250c-4-18 2-36 16-47-7 16-11 33-16 47z" fill="#256e46"/>
+            <path d="M84 250h32l-3 31a6 6 0 0 1-6 5H93a6 6 0 0 1-6-5z" fill="url(#potGrad)"/>
+            <rect x="81" y="246" width="38" height="8" rx="4" fill="#9c4c2c"/>
+          </g>
         </g>
 
         <!-- books + medallion (right side) -->
-        <g class="art-float-slow">
-          <rect x="392" y="258" width="96" height="17" rx="4" fill="url(#bookC)"/>
-          <rect x="400" y="241" width="82" height="17" rx="4" fill="url(#bookB)"/>
-          <rect x="408" y="224" width="66" height="17" rx="4" fill="url(#bookA)"/>
-          <circle cx="446" cy="215" r="19" fill="url(#medalGrad)" stroke="#8a6d1f" stroke-width="1"/>
-          <circle cx="446" cy="215" r="12" fill="none" stroke="#fff7e0" stroke-width="1.2" opacity="0.7"/>
-          <path d="M446 207v16M439 215h14" stroke="#fff7e0" stroke-width="1.4" opacity="0.85"/>
+        <g class="parallax" style="--depth:1.1">
+          <g class="art-float-slow">
+            <rect x="392" y="258" width="96" height="17" rx="4" fill="url(#bookC)"/>
+            <rect x="400" y="241" width="82" height="17" rx="4" fill="url(#bookB)"/>
+            <rect x="408" y="224" width="66" height="17" rx="4" fill="url(#bookA)"/>
+            <circle cx="446" cy="215" r="19" fill="url(#medalGrad)" stroke="#8a6d1f" stroke-width="1"/>
+            <circle cx="446" cy="215" r="12" fill="none" stroke="#fff7e0" stroke-width="1.2" opacity="0.7"/>
+            <path d="M446 207v16M439 215h14" stroke="#fff7e0" stroke-width="1.4" opacity="0.85"/>
+          </g>
         </g>
 
         <!-- notebook + pen -->
-        <g class="art-float-rev">
-          <rect x="356" y="298" width="92" height="62" rx="6" fill="#fffdf8" stroke="#e7e0d0" stroke-width="1.5"/>
-          <rect x="356" y="298" width="10" height="62" rx="3" fill="#9a1128"/>
-          <line x1="378" y1="313" x2="436" y2="313" stroke="#e7e0d0" stroke-width="1.5"/>
-          <line x1="378" y1="326" x2="436" y2="326" stroke="#e7e0d0" stroke-width="1.5"/>
-          <line x1="378" y1="339" x2="420" y2="339" stroke="#e7e0d0" stroke-width="1.5"/>
-          <g transform="rotate(28 420 320)">
-            <rect x="405" y="317" width="58" height="6" rx="3" fill="#241f1a"/>
-            <polygon points="463,317 471,320 463,323" fill="#8a6d1f"/>
+        <g class="parallax" style="--depth:1.3">
+          <g class="art-float-rev">
+            <rect x="356" y="298" width="92" height="62" rx="6" fill="#fffdf8" stroke="#e7e0d0" stroke-width="1.5"/>
+            <rect x="356" y="298" width="10" height="62" rx="3" fill="#9a1128"/>
+            <line x1="378" y1="313" x2="436" y2="313" stroke="#e7e0d0" stroke-width="1.5"/>
+            <line x1="378" y1="326" x2="436" y2="326" stroke="#e7e0d0" stroke-width="1.5"/>
+            <line x1="378" y1="339" x2="420" y2="339" stroke="#e7e0d0" stroke-width="1.5"/>
+            <g transform="rotate(28 420 320)">
+              <rect x="405" y="317" width="58" height="6" rx="3" fill="#241f1a"/>
+              <polygon points="463,317 471,320 463,323" fill="#8a6d1f"/>
+            </g>
           </g>
         </g>
 
         <!-- laptop -->
-        <g>
+        <g class="parallax" style="--depth:0.4">
           <!-- keyboard base -->
           <polygon points="118,318 402,318 428,335 92,335" fill="url(#baseGrad)"/>
           <polygon points="92,335 428,335 428,342 92,342" fill="#a9976a"/>
@@ -529,6 +568,90 @@
   </footer>
 
 </div>
+
+<div class="portal-overlay" id="portalOverlay"><div class="ring" id="portalRing"></div></div>
+
+<script>
+  // Cursor-driven parallax on the hero illustration. Only ever writes
+  // to two CSS custom properties (--px/--py) on one element — every
+  // .parallax layer reads them and multiplies by its own --depth, so
+  // this is one write per frame no matter how many layers exist, and
+  // it never touches layout, only transform (GPU compositor path).
+  (function(){
+    var heroArt = document.querySelector('.hero-art');
+    if (!heroArt) return;
+
+    var isTouch = window.matchMedia('(hover: none)').matches;
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isTouch || prefersReducedMotion) return;
+
+    var MAX_SHIFT = 6; // px, at the --depth:1 baseline
+    var rafScheduled = false;
+    var pending = null;
+
+    function flush(){
+      rafScheduled = false;
+      if (!pending) return;
+      heroArt.style.setProperty('--px', pending.x + 'px');
+      heroArt.style.setProperty('--py', pending.y + 'px');
+      pending = null;
+    }
+    function schedule(){
+      if (!rafScheduled){
+        rafScheduled = true;
+        requestAnimationFrame(flush);
+      }
+    }
+
+    heroArt.addEventListener('mousemove', function(e){
+      var rect = heroArt.getBoundingClientRect();
+      var xPct = (e.clientX - rect.left) / rect.width - 0.5;   // -0.5..0.5
+      var yPct = (e.clientY - rect.top) / rect.height - 0.5;
+      pending = { x: xPct * MAX_SHIFT * 2, y: yPct * MAX_SHIFT * 2 };
+      schedule();
+    });
+    heroArt.addEventListener('mouseleave', function(){
+      pending = { x: 0, y: 0 };
+      schedule();
+    });
+  })();
+
+  // Portal-style click transition on "Enter Portal" — a circle expands
+  // from the button, matching the name, then navigates. Cheap on any
+  // hardware: one element, transform+opacity only, no blur/filter.
+  (function(){
+    var btn = document.querySelector('.btn-primary');
+    var overlay = document.getElementById('portalOverlay');
+    var ring = document.getElementById('portalRing');
+    if (!btn || !overlay || !ring) return;
+
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced){
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        var href = btn.getAttribute('href');
+        var rect = btn.getBoundingClientRect();
+        ring.style.left = (rect.left + rect.width / 2) + 'px';
+        ring.style.top = (rect.top + rect.height / 2) + 'px';
+        overlay.classList.add('active');
+        setTimeout(function(){ window.location.href = href; }, 460);
+      });
+    }
+
+    // If the browser restores this page from bfcache (e.g. hitting
+    // "back" from the dashboard), the DOM snapshot would otherwise
+    // still have the overlay frozen at its fully-expanded final state
+    // from before navigating away, showing a stuck solid-maroon screen.
+    // `pageshow` fires on both a fresh load and a bfcache restore
+    // (unlike `load`, which only fires on a fresh load), so resetting
+    // here on every pageshow covers both cases.
+    window.addEventListener('pageshow', function(){
+      overlay.classList.remove('active');
+      ring.style.left = '';
+      ring.style.top = '';
+    });
+  })();
+</script>
 
 </body>
 </html>
