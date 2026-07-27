@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="view-transition" content="same-origin">
 <title>PUP OUS Student Lookup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -363,23 +362,8 @@
     .rc-header{ cursor:default; }
     * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
-  /* ---- Zoom + fade page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
-  ::view-transition-old(root){
-    animation:
-      bsoa-fade-out 140ms ease-out forwards,
-      bsoa-zoom-out 200ms ease-out forwards;
   }
-  ::view-transition-new(root){
-    animation: bsoa-fade-in 260ms cubic-bezier(0,0,.2,1) forwards;
   }
-  @keyframes bsoa-fade-out{
-    to{ opacity:0; }
-  }
-  @keyframes bsoa-zoom-out{
-    to{ transform:scale(1.02); }
-  }
-  @keyframes bsoa-fade-in{
-    from{ opacity:0; transform:scale(.98); }
     to{ opacity:1; transform:scale(1); }
   }
 </style>
