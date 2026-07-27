@@ -25,7 +25,7 @@
     --muted:#6b6a68;
   }
   *{box-sizing:border-box;}
-  html{ height:100%; }
+  html{ height:100%; overflow:hidden; }
   body{
     margin:0;
     font-family:'Inter', Arial, sans-serif;
@@ -38,14 +38,15 @@
       radial-gradient(circle at 92% 88%, rgba(19,78,143,0.07), transparent 44%),
       linear-gradient(160deg, var(--paper-1) 0%, var(--paper-2) 100%);
     color:var(--ink);
-    min-height:100vh; /* fallback for browsers without svh support */
-    min-height:100svh; /* fills the screen but never clips content that doesn't fit */
+    height:100vh;  /* fixed height, not min-height, so content can never push the page taller than the screen */
+    height:100svh; /* accounts for mobile browser chrome */
+    overflow:hidden;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    padding:20px 16px;
-    padding:max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    padding:16px 16px;
+    padding:max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
     position:relative;
   }
 
@@ -80,9 +81,9 @@
   }
 
   .seal{
-    width:58px;
-    height:58px;
-    margin:0 auto 16px;
+    width:52px;
+    height:52px;
+    margin:0 auto 10px;
     border-radius:50%;
     position:relative;
     display:flex;
@@ -147,32 +148,32 @@
     border:1px solid rgba(122,12,30,0.25);
     border-radius:999px;
     padding:6px 16px;
-    margin:0 0 10px;
+    margin:0 0 8px;
     box-shadow:0 4px 12px rgba(122,12,30,0.22);
   }
 
   h1{
     font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:800;
-    font-size:26px;
-    margin:0 0 12px;
+    font-size:24px;
+    margin:0 0 8px;
     color:var(--maroon-700);
     letter-spacing:-0.01em;
     opacity:0;
     animation:fadeIn .8s ease .25s forwards;
   }
   .welcome-sub{
-    font-size:13.5px;
+    font-size:13px;
     color:var(--muted);
-    margin:0 0 14px;
+    margin:0 0 8px;
     line-height:1.4;
   }
   .prompt{
     font-family:'Plus Jakarta Sans', sans-serif;
-    font-size:14px;
+    font-size:13.5px;
     font-weight:700;
     color:var(--ink);
-    margin:0 0 22px;
+    margin:0 0 14px;
   }
 
   .status-bar{
@@ -188,7 +189,7 @@
     border:1px solid var(--line);
     border-radius:999px;
     padding:5px 14px;
-    margin:0 0 26px;
+    margin:0 0 14px;
   }
   .status-dot{
     width:7px;
@@ -212,7 +213,7 @@
   .cards{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:18px;
+    gap:14px;
     perspective:1200px;
   }
 
@@ -227,8 +228,8 @@
     border:1px solid var(--line);
     border-top-width:5px; /* Creates an executive color tab */
     border-radius:12px;
-    padding:24px 22px;
-    min-height:225px;
+    padding:20px 20px;
+    min-height:clamp(140px, 22vh, 210px);
     justify-content:flex-start;
     box-shadow:0 6px 18px rgba(36,31,26,0.10), 0 2px 6px rgba(36,31,26,0.07);
     transition:transform .35s cubic-bezier(.2,.8,.3,1.15), box-shadow .35s ease, border-color .2s ease;
@@ -305,9 +306,9 @@
 
   /* ---- Icon badges: layered "3D" look (LITE: no blur glow) ---- */
   .icon-badge{
-    width:60px;
-    height:60px;
-    margin:0 0 16px;
+    width:50px;
+    height:50px;
+    margin:0 0 10px;
     border-radius:14px;
     display:flex;
     align-items:center;
@@ -316,7 +317,7 @@
     transition:transform .25s cubic-bezier(.2,.8,.3,1.4), box-shadow .25s ease;
   }
   a.card:hover .icon-badge{ transform:scale(1.1) translateY(-2px); }
-  .icon-badge svg{ width:29px; height:29px; stroke-width:1.8px; position:relative; z-index:1; }
+  .icon-badge svg{ width:25px; height:25px; stroke-width:1.8px; position:relative; z-index:1; }
 
   .card.attendance .icon-badge{
     color:var(--maroon-700);
@@ -385,8 +386,8 @@
     align-items:center;
     justify-content:center;
     gap:6px;
-    margin-top:16px;
-    padding-top:12px;
+    margin-top:10px;
+    padding-top:8px;
     width:100%;
     border-top:1px solid var(--line);
     font-family:'Plus Jakarta Sans', sans-serif;
@@ -413,20 +414,20 @@
   .card.overview:hover .title{ color:var(--gold-700); }
 
   .disclaimer{
-    font-size:12px;
-    line-height:1.5;
+    font-size:11.5px;
+    line-height:1.45;
     color:#718096;
     text-align:center;
     max-width:520px;
-    margin:0 auto 14px;
+    margin:0 auto 10px;
   }
 
   .footer{
-    margin-top:22px;
-    padding-top:14px;
+    margin-top:12px;
+    padding-top:10px;
     font-size:10px;
     color:var(--muted);
-    line-height:1.6;
+    line-height:1.45;
     text-align:center;
     position:relative;
   }
@@ -442,16 +443,37 @@
     display:block;
     width:120px;
     height:1px;
-    margin:0 auto 14px;
+    margin:0 auto 10px;
     background:linear-gradient(90deg, transparent, var(--line) 50%, transparent);
   }
+
+  /* Extra compression for shorter viewports, so content never has to
+     choose between clipping and scrolling on smaller laptop screens. */
+  @media (max-height:820px){
+    .seal{ width:40px; height:40px; margin-bottom:6px; }
+    .status-bar{ padding:4px 12px; margin-bottom:10px; }
+    h1{ font-size:21px; margin-bottom:6px; }
+    .welcome-sub{ margin-bottom:6px; }
+    .prompt{ margin-bottom:10px; }
+    .cards{ gap:10px; }
+    a.card{ padding:14px 16px; min-height:clamp(120px, 19vh, 175px); }
+    .icon-badge{ width:42px; height:42px; margin-bottom:8px; }
+    .icon-badge svg{ width:21px; height:21px; }
+    .card .desc{ font-size:12px; line-height:1.45; }
+    .card-footer{ margin-top:8px; padding-top:6px; }
+    .footer{ margin-top:8px; padding-top:8px; }
+    .disclaimer{ display:none; } /* least essential text; first to go under space pressure */
+  }
+  @media (max-height:620px){
+    /* Below this, compressing further would hurt readability more than
+       a scrollbar would — fall back to normal scrolling instead. */
+    html, body{ height:auto; min-height:100vh; overflow:auto; }
+  }
+
   @media (max-width:520px){
     .cards{ grid-template-columns:1fr; }
-    body{ height:auto; padding:32px 16px; }
+    body{ height:auto; overflow:auto; padding:32px 16px; }
     a.card{ min-height:0; }
-  }
-  }
-    to{ opacity:1; transform:scale(1); }
   }
 
   @media (prefers-reduced-motion: reduce){
