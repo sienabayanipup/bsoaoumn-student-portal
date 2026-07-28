@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="view-transition" content="same-origin">
 <title>BSOAOUMN 2-7 Student Portal</title>
+<script>
+  // Runs before first paint: if we're arriving back from the dashboard,
+  // start the page already "pushed in" (scaled/blurred, portal screen
+  // covering everything) so there is zero flash of the un-animated
+  // landing page before the reverse transition kicks off.
+  (function(){
+    try{
+      if (sessionStorage.getItem('portalNav') === 'backward' &&
+          !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        document.documentElement.classList.add('portal-arriving');
+      }
+    }catch(e){}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Pinyon+Script&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
@@ -362,21 +376,44 @@
   @keyframes bsoa-fade-out{ to{ opacity:0; transform:scale(1.03); } }
   @keyframes bsoa-fade-in{ from{ opacity:0; transform:scale(.97); } to{ opacity:1; transform:scale(1); } }
 
-  /* Enter Portal camera-push, applied via JS before navigation (visible regardless of scroll position) */
-  body{ transition:transform .3s cubic-bezier(.6,0,.9,.2), filter .3s ease, opacity .3s ease; transform-origin:50% 40%; }
-  .portal-launch{ transform:scale(1.06); filter:blur(3px); opacity:0.4; }
+  /* ================= Portal Transition System =================
+     A reversible, cinematic hand-off between the landing page and the
+     dashboard. Only transform / opacity / filter are ever animated (no
+     layout-triggering properties), and everything here is skipped
+     entirely under prefers-reduced-motion by the JS below. */
 
-  /* Red flash overlay: fades in to fully cover the screen just before the
-     cross-document navigation fires. Since this page and the destination
-     share the same origin, the browser's native View Transition captures
-     this red frame as the "old" snapshot and crossfades it away (via
-     ::view-transition-old(root) below) once the dashboard has loaded. */
-  .portal-red-flash{
-    position:fixed; inset:0; z-index:9999; pointer-events:none;
-    background:radial-gradient(circle at var(--flash-x,50%) var(--flash-y,50%), var(--maroon-600), var(--maroon-700) 70%);
-    opacity:0; transition:opacity .38s cubic-bezier(.4,0,.2,1);
+  /* STEP 1 — the Enter Portal button gently depresses on click */
+  #enterPortal.depress{ transform:scale(.97); transition:transform .12s cubic-bezier(.22,1,.36,1); }
+
+  /* STEP 2 — the whole page takes a subtle camera push: scale up,
+     blur in, dim slightly. Used both leaving this page (forward) and
+     arriving back onto it (backward, run in reverse). */
+  body.portal-camera{
+    transition:transform .95s cubic-bezier(.22,1,.36,1), filter .95s cubic-bezier(.22,1,.36,1);
+    transform-origin:50% 42%; will-change:transform, filter;
   }
-  .portal-red-flash.active{ opacity:1; }
+  body.portal-camera.pushing{ transform:scale(1.08); filter:blur(6px) brightness(.9); }
+  html.portal-arriving body{ transform:scale(1.08); filter:blur(6px) brightness(.9); }
+
+  /* STEP 3 — the laptop screen becomes the transition anchor: a rounded
+     "screen" window grows from the click point until it fills the
+     entire viewport, then fades away on the other side to reveal the
+     destination page underneath. */
+  .portal-screen{
+    position:fixed; inset:0; z-index:9999; pointer-events:none;
+    background:radial-gradient(circle at var(--flash-x,50%) var(--flash-y,50%), #241f1a 0%, #17130f 55%, #0c0a08 100%);
+    opacity:0; clip-path:inset(44% 40% round 18px);
+    transition:opacity .5s cubic-bezier(.16,1,.3,1), clip-path 1s cubic-bezier(.16,1,.3,1);
+  }
+  .portal-screen.grow{ opacity:1; clip-path:inset(0% 0% round 0px); }
+  .portal-screen.fade-out{ opacity:0; transition:opacity .6s cubic-bezier(.16,1,.3,1); }
+  /* Arriving back from the dashboard: start fully covered, no growth
+     animation — we only ever fade this away on arrival. */
+  html.portal-arriving .portal-screen{ opacity:1; clip-path:inset(0% 0% round 0px); transition:none; }
+
+  @media (prefers-reduced-motion: reduce){
+    .portal-screen, body.portal-camera{ display:none !important; }
+  }
 
   @media (max-width:900px), (prefers-reduced-motion: reduce){
     .stage{ height:auto; }
@@ -635,7 +672,7 @@
   <div class="line2">Student Portal &nbsp;&middot;&nbsp; Internal Academic Monitoring &nbsp;&middot;&nbsp; Version 6.0.1 &nbsp;&middot;&nbsp; &copy; 2026</div>
 </footer>
 
-<div class="portal-red-flash" id="portalRedFlash" aria-hidden="true"></div>
+<div class="portal-screen" id="portalScreen" aria-hidden="true"></div>
 
 <script>
 (function(){
@@ -782,36 +819,97 @@
     }, { passive:true });
   }
 
-  // Enter Portal: brief camera-push + red flash before the View Transition navigation
+  // ================= Portal Transition: Landing → Dashboard =================
   var enterBtn = document.getElementById('enterPortal');
-  var redFlash = document.getElementById('portalRedFlash');
+  var portalScreen = document.getElementById('portalScreen');
+
   enterBtn.addEventListener('click', function(e){
-    if (reduced) return; // let it navigate normally
+    if (reduced) return; // let it navigate normally, no motion
     e.preventDefault();
-    document.body.classList.add('portal-launch');
-    if (redFlash){
-      var originX = e.clientX || (enterBtn.getBoundingClientRect().left + enterBtn.getBoundingClientRect().width / 2);
-      var originY = e.clientY || (enterBtn.getBoundingClientRect().top + enterBtn.getBoundingClientRect().height / 2);
-      redFlash.style.setProperty('--flash-x', originX + 'px');
-      redFlash.style.setProperty('--flash-y', originY + 'px');
-      redFlash.classList.add('active');
+    var href = enterBtn.getAttribute('href');
+    var originX = e.clientX || (enterBtn.getBoundingClientRect().left + enterBtn.getBoundingClientRect().width / 2);
+    var originY = e.clientY || (enterBtn.getBoundingClientRect().top + enterBtn.getBoundingClientRect().height / 2);
+    if (portalScreen){
+      portalScreen.style.setProperty('--flash-x', originX + 'px');
+      portalScreen.style.setProperty('--flash-y', originY + 'px');
     }
+
+    // STEP 1 — button depresses (120ms)
+    enterBtn.classList.add('depress');
+
     setTimeout(function(){
-      window.location.href = enterBtn.getAttribute('href');
-    }, 380);
+      enterBtn.classList.remove('depress');
+
+      // STEP 2 — page-wide camera push
+      document.body.classList.add('portal-camera', 'pushing');
+      // STEP 3 — laptop screen grows to fill the viewport
+      if (portalScreen) portalScreen.classList.add('grow');
+
+      // Hand off to the dashboard: tell it a forward portal transition
+      // is in progress, and remember where we scrolled from so a Back
+      // trip can return here exactly.
+      try{
+        sessionStorage.setItem('portalNav', 'forward');
+        sessionStorage.setItem('portalScrollY', String(window.scrollY));
+      }catch(err){}
+
+      setTimeout(function(){
+        window.location.href = href;
+      }, 850); // total ~970ms, within the 900-1200ms forward budget
+    }, 120);
   });
 
+  // ================= Portal Transition: Dashboard → Landing (arrival) =================
+  // If we're arriving here via the dashboard's "Back to Portal" link,
+  // the page already started in the "pushed in" state (see the inline
+  // <script> in <head>) with the portal screen fully covering it. Now
+  // pull the camera back out, restore the exact scroll position, and
+  // fade the screen away to reveal the landing page underneath.
+  (function handleReturnArrival(){
+    var wasBackwardNav = false;
+    try{ wasBackwardNav = sessionStorage.getItem('portalNav') === 'backward'; }catch(err){}
+    if (!wasBackwardNav) return;
+
+    var savedY = 0;
+    try{
+      savedY = parseInt(sessionStorage.getItem('portalScrollY') || '0', 10);
+      sessionStorage.removeItem('portalNav');
+      sessionStorage.removeItem('portalScrollY');
+    }catch(err){}
+
+    window.scrollTo(0, savedY); // hidden behind the still-opaque portal screen
+    onScroll(); // sync the cinematic hero to the restored scroll position
+
+    if (reduced){
+      document.documentElement.classList.remove('portal-arriving');
+      return;
+    }
+
+    requestAnimationFrame(function(){
+      document.body.classList.add('portal-camera');
+      document.documentElement.classList.remove('portal-arriving');
+      // Force the "arriving" (no-transition, pushed-in) state to commit
+      // before re-enabling transitions, so the pull-back actually animates.
+      void document.body.offsetWidth;
+      requestAnimationFrame(function(){
+        document.body.classList.remove('pushing');
+        if (portalScreen) portalScreen.classList.add('fade-out');
+        setTimeout(function(){
+          document.body.classList.remove('portal-camera');
+          if (portalScreen) portalScreen.classList.remove('grow', 'fade-out');
+        }, 1000);
+      });
+    });
+  })();
+
   // Safety net: if this page is restored from the browser's back/forward
-  // cache (e.g. the user hits the Back button on the dashboard), Chrome
-  // can restore the exact DOM state it had at the moment we navigated
-  // away — including the red flash still at full opacity and the body
-  // mid camera-push. Without this, landing on this page via Back would
-  // show a frozen red screen instead of the actual page. Clearing both
-  // classes on restore guarantees the page always comes back clean.
+  // cache mid-transition, guarantee it always comes back in a clean,
+  // fully visible state instead of stuck scaled/blurred/covered.
   window.addEventListener('pageshow', function(evt){
     if (evt.persisted){
-      document.body.classList.remove('portal-launch');
-      if (redFlash) redFlash.classList.remove('active');
+      document.body.classList.remove('portal-camera', 'pushing');
+      document.documentElement.classList.remove('portal-arriving');
+      if (portalScreen) portalScreen.classList.remove('grow', 'fade-out');
     }
   });
 })();
