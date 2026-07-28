@@ -625,7 +625,7 @@
     </div>
   </div>
 
-  <a class="btn-primary" id="enterPortal" href="index-lite.html">
+  <a class="btn-primary" id="enterPortal" href="dashboard.html">
     Enter Portal
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
   </a>
@@ -799,6 +799,20 @@
     setTimeout(function(){
       window.location.href = enterBtn.getAttribute('href');
     }, 380);
+  });
+
+  // Safety net: if this page is restored from the browser's back/forward
+  // cache (e.g. the user hits the Back button on the dashboard), Chrome
+  // can restore the exact DOM state it had at the moment we navigated
+  // away — including the red flash still at full opacity and the body
+  // mid camera-push. Without this, landing on this page via Back would
+  // show a frozen red screen instead of the actual page. Clearing both
+  // classes on restore guarantees the page always comes back clean.
+  window.addEventListener('pageshow', function(evt){
+    if (evt.persisted){
+      document.body.classList.remove('portal-launch');
+      if (redFlash) redFlash.classList.remove('active');
+    }
   });
 })();
 </script>
