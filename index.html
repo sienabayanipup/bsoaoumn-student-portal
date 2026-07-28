@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="view-transition" content="same-origin">
 <title>BSOAOUMN 2-7 Student Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Pinyon+Script&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root{
     --maroon-700:#7a0c1e;
@@ -23,7 +24,7 @@
     --muted:#6b6a68;
   }
   *{box-sizing:border-box;}
-  html, body{ height:100%; }
+  html{ scroll-behavior:auto; }
   body{
     margin:0;
     font-family:'Inter', Arial, sans-serif;
@@ -35,622 +36,480 @@
       linear-gradient(160deg, var(--paper-1) 0%, var(--paper-2) 100%);
     color:var(--ink);
     -webkit-font-smoothing:antialiased;
-    height:100vh;
+  }
+
+  /* ---------- Progress rail ---------- */
+  .progress-rail{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg, var(--maroon-700), var(--gold-700));
+    z-index:50; transition:width .05s linear;
+  }
+
+  .top-badge{
+    position:fixed; top:20px; left:24px; z-index:40;
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px;
+    letter-spacing:.09em; text-transform:uppercase; color:var(--gold-700);
+    background:rgba(253,246,230,0.9); backdrop-filter:blur(6px);
+    border:1px solid #e6d5a3; border-radius:999px; padding:6px 14px 6px 10px;
+  }
+  .top-badge svg{ width:12px; height:12px; }
+
+  .scroll-cue{
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:40;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+    opacity:1; transition:opacity .3s ease;
+  }
+  .scroll-cue.hide{ opacity:0; pointer-events:none; }
+  .scroll-cue .chev{
+    width:14px; height:14px; border-right:2px solid var(--maroon-700); border-bottom:2px solid var(--maroon-700);
+    transform:rotate(45deg); animation:chevBounce 1.6s ease-in-out infinite;
+  }
+  @keyframes chevBounce{ 0%,100%{ transform:rotate(45deg) translate(0,0); } 50%{ transform:rotate(45deg) translate(3px,3px); } }
+
+  /* ---------- Pinned stage ---------- */
+  .stage{ height:600vh; position:relative; }
+  .stage-inner{
+    position:sticky; top:0; height:100vh; width:100%;
+    display:grid; grid-template-columns:0.86fr 1.14fr; align-items:center;
+    max-width:1220px; margin:0 auto; padding:0 32px; gap:clamp(24px,4vw,56px);
     overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
   }
 
-  .page{
-    width:100%;
-    max-width:1220px;
-    margin:0 auto;
-    padding:0 32px;
+  /* ---------- Copy blocks (one per beat, cross-fade) ---------- */
+  .copy-block{
+    position:absolute; max-width:460px; opacity:0; transform:translateY(16px);
+    transition:opacity .5s ease, transform .5s ease; pointer-events:none;
+  }
+  .copy-block.active{ opacity:1; transform:translateY(0); pointer-events:auto; position:relative; }
+  .copy-eyebrow{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px;
+    letter-spacing:.09em; text-transform:uppercase; color:var(--accent, var(--maroon-700));
+    background:var(--accent-tint, #fdf6e6); border:1px solid var(--accent-line,#e6d5a3);
+    border-radius:999px; padding:6px 14px; margin:0 0 18px;
+  }
+  .copy-block h1{ margin:0 0 18px; }
+  .copy-block h2{
+    font-family:'Playfair Display', serif; font-weight:700;
+    font-size:clamp(27px, 3.4vw, 39px); line-height:1.14; letter-spacing:-0.008em;
+    margin:0 0 14px; color:var(--accent, var(--maroon-700));
   }
 
-  /* ---------- Hero ---------- */
-  .hero{
-    display:grid;
-    grid-template-columns:0.86fr 1.14fr;
-    align-items:center;
-    gap:clamp(24px, 4vw, 56px);
-    margin-bottom:120px;
+  /* ---------- Brand wordmark (hero) ---------- */
+  .brand-mark{ display:flex; align-items:flex-start; gap:16px; margin-bottom:4px; }
+  .brand-seal{
+    flex:0 0 auto; width:56px; height:56px; margin-top:3px;
+    border-radius:14px; display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display', serif; font-weight:700; font-size:15px; letter-spacing:.01em;
+    color:var(--maroon-700); background:rgba(122,12,30,0.09); border:1px solid rgba(122,12,30,0.16);
   }
-  .hero-copy{ opacity:0; animation:fadeInUp .7s ease .05s forwards; }
-  .hero-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:700;
-    font-size:11px;
-    letter-spacing:.09em;
-    text-transform:uppercase;
-    color:var(--gold-700);
-    background:#fdf6e6;
-    border:1px solid #e6d5a3;
-    border-radius:999px;
-    padding:6px 14px 6px 10px;
-    margin:0 0 18px;
-  }
-  .hero-badge svg{ width:13px; height:13px; flex:0 0 auto; }
-  h1{
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:800;
-    font-size:clamp(30px, 3.6vw, 42px);
-    line-height:1.08;
-    letter-spacing:-0.015em;
-    margin:0 0 2px;
+  .brand-name{
+    display:block;
+    font-family:'Playfair Display', serif; font-weight:700;
+    font-size:clamp(30px, 3.7vw, 43px); line-height:1.04; letter-spacing:-0.008em;
     color:var(--maroon-700);
   }
-  h1 span{
-    display:block;
-    color:var(--ink);
-    font-size:0.66em;
-    font-weight:700;
-    margin-top:4px;
-    letter-spacing:-0.005em;
+  .brand-sub{
+    display:block; margin-top:1px;
+    font-family:'Pinyon Script', cursive; font-weight:400;
+    font-size:clamp(28px, 3.4vw, 38px); line-height:1;
+    letter-spacing:.01em; text-transform:none;
+    color:var(--gold-700);
   }
-  .hero-rule{
-    width:44px;
-    height:3px;
-    border-radius:2px;
-    background:linear-gradient(90deg, var(--gold-700), transparent);
-    margin:16px 0 18px;
-  }
-  .hero-desc{
-    font-size:14.5px;
-    line-height:1.62;
-    color:var(--muted);
-    max-width:420px;
-    margin:0 0 26px;
-  }
-  .hero-actions{ margin-bottom:18px; }
+  .copy-block p{ font-size:14.5px; line-height:1.62; color:var(--muted); margin:0 0 22px; }
+  .copy-rule{ width:44px; height:3px; border-radius:2px; margin-bottom:16px;
+    background:linear-gradient(90deg, var(--accent, var(--gold-700)), transparent); }
+
   .btn-primary{
-    display:inline-flex;
-    align-items:center;
-    gap:9px;
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:700;
-    font-size:14.5px;
-    color:#fff;
-    background:linear-gradient(135deg, var(--maroon-700), var(--maroon-600));
-    border:none;
-    border-radius:10px;
-    padding:17px 30px;
-    text-decoration:none;
+    display:inline-flex; align-items:center; gap:9px;
+    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:14.5px; color:#fff;
+    background:linear-gradient(135deg, var(--maroon-700), var(--maroon-600)); border:none;
+    border-radius:10px; padding:17px 30px; text-decoration:none;
     box-shadow:0 8px 20px rgba(122,12,30,0.28);
     transition:transform .18s ease, box-shadow .18s ease;
   }
-  .btn-primary:hover{
-    transform:translateY(-2px);
-    box-shadow:0 12px 26px rgba(122,12,30,0.34);
-  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 26px rgba(122,12,30,0.34); }
   .btn-primary svg{ transition:transform .18s ease; }
   .btn-primary:hover svg{ transform:translateX(3px); }
-  .hero-meta{
-    display:flex;
-    align-items:center;
-    gap:20px;
-    flex-wrap:wrap;
-  }
+
+  .hero-meta{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:22px; }
   .hero-meta span.item{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:600;
-    font-size:11.5px;
-    color:var(--muted);
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:11.5px; color:var(--muted);
   }
-  .hero-meta svg{ width:14px; height:14px; flex:0 0 auto; }
-  .hero-meta .mi-secure{ color:var(--maroon-700); }
-  .hero-meta .mi-reliable{ color:var(--blue-700); }
-  .hero-meta .mi-internal{ color:var(--gold-700); }
+  .hero-meta svg{ width:14px; height:14px; }
 
-  /* ---------- Hero illustration ---------- */
-  .hero-art{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    opacity:0;
-    animation:fadeInUp .8s ease .18s forwards;
-  }
-  .hero-art svg{
-    width:100%;
-    height:auto;
-    max-height:42vh;
-    filter:drop-shadow(0 16px 22px rgba(122,12,30,0.10));
-  }
-  .art-float{ animation:artFloat 5s ease-in-out infinite; }
-  .art-float-slow{ animation:artFloat 6.5s ease-in-out infinite; }
-  .art-float-rev{ animation:artFloatRev 5.5s ease-in-out infinite; }
-  @keyframes artFloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
-  @keyframes artFloatRev{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(5px);} }
+  /* ---------- Art stage: laptop + floating panels ---------- */
+  .art-stage{ position:relative; display:flex; align-items:center; justify-content:center; height:100%; }
+  .laptop-wrap{ position:relative; width:100%; max-width:480px; transition:transform .6s cubic-bezier(.2,.8,.3,1); }
+  .laptop-wrap svg{ width:100%; height:auto; filter:drop-shadow(0 20px 30px rgba(122,12,30,0.12)); }
 
-  /* Cursor-driven parallax — transform-only, so it stays on the GPU
-     compositor path instead of forcing a repaint every frame. --px/--py
-     are set once via JS on .hero-art and inherited down; each layer just
-     multiplies by its own --depth for a layered feel. */
-  .parallax{
-    transform:translate(calc(var(--px, 0px) * var(--depth, 1)), calc(var(--py, 0px) * var(--depth, 1)));
-    transition:transform .18s ease-out;
+  .panel{
+    position:absolute; width:260px; background:rgba(255,253,247,0.86); backdrop-filter:blur(14px);
+    border:1px solid var(--line); border-top:3px solid var(--accent, var(--maroon-700));
+    border-radius:14px; padding:18px 18px 16px; box-shadow:0 24px 46px rgba(36,31,26,0.16);
+    opacity:0; transform:translateY(24px) scale(.92); pointer-events:none;
+    transition:opacity .55s cubic-bezier(.2,.8,.3,1), transform .55s cubic-bezier(.2,.8,.3,1);
   }
+  .panel.active{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+  .panel-attendance{ top:6%; right:-4%; }
+  .panel-lookup{ top:30%; left:-8%; }
+  .panel-activity{ bottom:16%; right:-6%; }
+  .panel-overview{ bottom:-2%; left:2%; }
 
-  /* ---------- Feature section ---------- */
-  .features-head{
-    text-align:center;
-    max-width:520px;
-    margin:0 auto 24px;
-  }
-  .features-eyebrow{
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:700;
-    font-size:11px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--green-700);
-    margin:0 0 8px;
-  }
-  .features-head h2{
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:800;
-    font-size:22px;
-    letter-spacing:-0.01em;
-    margin:0;
-    color:var(--ink);
-  }
-  .feature-grid{
-    display:grid;
-    grid-template-columns:repeat(4, 1fr);
-    gap:18px;
-  }
-  .feature{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-top:3px solid var(--top-color, var(--maroon-700));
-    border-radius:12px;
-    padding:22px 20px 22px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    opacity:0;
-    animation:fadeInUp .6s ease both;
-    box-shadow:0 2px 10px rgba(60,40,20,0.05);
-    transition:transform .18s ease, box-shadow .18s ease;
-  }
-  .feature:hover{
-    transform:translateY(-4px);
-    box-shadow:0 12px 22px rgba(60,40,20,0.10);
-  }
-  .feature:nth-child(1){ animation-delay:.05s; --top-color:var(--maroon-700); }
-  .feature:nth-child(2){ animation-delay:.12s; --top-color:var(--blue-700); }
-  .feature:nth-child(3){ animation-delay:.19s; --top-color:var(--green-700); }
-  .feature:nth-child(4){ animation-delay:.26s; --top-color:var(--gold-700); }
-  .feature-icon{
-    width:34px;
-    height:34px;
-    border-radius:9px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .feature-icon svg{ width:17px; height:17px; }
-  .feature.f-attendance .feature-icon{ background:rgba(122,12,30,0.09); color:var(--maroon-700); }
-  .feature.f-lookup .feature-icon{ background:rgba(19,78,143,0.09); color:var(--blue-700); }
-  .feature.f-tracking .feature-icon{ background:rgba(26,107,63,0.09); color:var(--green-700); }
-  .feature.f-mgmt .feature-icon{ background:rgba(138,109,31,0.10); color:var(--gold-700); }
-  .feature h3{
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-weight:700;
-    font-size:14px;
-    margin:0;
-    color:var(--ink);
-  }
-  .feature p{
-    font-size:12px;
-    line-height:1.5;
-    color:var(--muted);
-    margin:0;
-  }
+  .panel-icon{ width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; background:var(--accent-tint); color:var(--accent); }
+  .panel-icon svg{ width:16px; height:16px; }
+  .panel h4{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13px; margin:0 0 10px; color:var(--ink); }
 
-  /* ---------- Footer ---------- */
-  footer{
-    text-align:center;
-    margin-top:28px;
-    padding-top:16px;
-    border-top:1px solid var(--line);
-  }
-  footer .line2{
-    font-size:11px;
-    color:var(--muted);
-    letter-spacing:.02em;
-  }
+  /* attendance mini-grid */
+  .week-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:5px; }
+  .week-grid .d{ aspect-ratio:1; border-radius:5px; background:#f0e8da; display:flex; align-items:center; justify-content:center; }
+  .week-grid .d.done{ background:var(--maroon-700); }
+  .week-grid .d.done svg{ width:9px; height:9px; stroke:#fff; }
+  .week-grid .d.done{ animation:popIn .4s ease both; }
 
-  @keyframes fadeInUp{
-    from{ opacity:0; transform:translateY(14px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
+  /* lookup mini-search */
+  .search-row{ display:flex; align-items:center; gap:6px; background:#eef4fa; border:1px solid #d7e5f2; border-radius:8px; padding:8px 10px; margin-bottom:10px; }
+  .search-row svg{ width:13px; height:13px; color:var(--blue-700); flex:0 0 auto; }
+  .search-row span{ font-size:11px; color:var(--muted); font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; }
+  .result-line{ height:8px; border-radius:4px; background:#e2ecf6; margin-bottom:6px; }
+  .result-line:nth-child(3){ width:70%; }
+  .result-line:nth-child(4){ width:45%; }
 
-  /* ---------- Responsive ---------- */
+  /* activity progress */
+  .task-row{ display:flex; align-items:center; gap:8px; margin-bottom:9px; font-size:11px; color:var(--ink); font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; }
+  .task-check{ width:16px; height:16px; border-radius:50%; background:var(--green-700); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .task-check svg{ width:9px; height:9px; stroke:#fff; }
+  .task-bar-track{ height:6px; border-radius:3px; background:#e2f0e7; overflow:hidden; margin-top:6px; }
+  .task-bar-fill{ height:100%; width:0%; background:var(--green-700); border-radius:3px; transition:width 1s ease .1s; }
+  .panel-activity.active .task-bar-fill{ width:78%; }
+
+  /* overview chart */
+  .donut{ width:56px; height:56px; border-radius:50%; margin:0 auto 10px;
+    background:conic-gradient(var(--gold-700) 0deg, var(--gold-700) 0deg, #f2e6c2 0deg);
+    display:flex; align-items:center; justify-content:center; transition:background 1s ease .1s; position:relative; }
+  .donut::after{ content:""; position:absolute; inset:9px; border-radius:50%; background:var(--card); }
+  .panel-overview.active .donut{ background:conic-gradient(var(--gold-700) 0deg 260deg, #f2e6c2 260deg 360deg); }
+  .bar-row{ display:flex; align-items:flex-end; gap:5px; height:34px; }
+  .bar-row i{ flex:1; background:var(--gold-700); border-radius:3px 3px 0 0; height:0%; transition:height .8s ease; }
+  .panel-overview.active .bar-row i:nth-child(1){ height:55%; }
+  .panel-overview.active .bar-row i:nth-child(2){ height:85%; }
+  .panel-overview.active .bar-row i:nth-child(3){ height:40%; }
+  .panel-overview.active .bar-row i:nth-child(4){ height:70%; }
+
+  @keyframes popIn{ from{ transform:scale(.4); opacity:0; } to{ transform:scale(1); opacity:1; } }
+
+  /* ---------- Final / CTA section ---------- */
+  .finale{
+    max-width:1220px; margin:0 auto; padding:120px 32px 60px; text-align:center;
+  }
+  .finale-eyebrow{
+    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--green-700); margin:0 0 10px;
+  }
+  .finale h2{ font-family:'Playfair Display', serif; font-weight:700; font-size:clamp(25px,3.1vw,34px); letter-spacing:-0.006em; margin:0 0 14px; color:var(--ink); }
+  .finale p{ font-size:14.5px; color:var(--muted); max-width:480px; margin:0 auto 30px; line-height:1.6; }
+
+  .mini-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; max-width:760px; margin:0 auto 44px; }
+  .mini-card{
+    background:var(--card); border:1px solid var(--line); border-top:3px solid var(--top-color, var(--maroon-700));
+    border-radius:12px; padding:16px 14px; text-align:left; box-shadow:0 2px 10px rgba(60,40,20,0.05);
+    opacity:0; transform:translateY(14px); animation:fadeInUp .6s ease forwards; animation-timeline:view();
+    animation-range:entry 0% cover 30%;
+  }
+  .mini-card .mini-icon{ width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+  .mini-card .mini-icon svg{ width:14px; height:14px; }
+  .mini-card h3{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:12.5px; margin:0 0 4px; color:var(--ink); }
+  .mini-card p{ font-size:10.5px; line-height:1.4; margin:0; }
+
+  footer{ text-align:center; padding:20px 32px 40px; border-top:1px solid var(--line); max-width:1220px; margin:0 auto; }
+  footer .line2{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted); letter-spacing:.02em; }
+
+  @keyframes fadeInUp{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+
+  ::view-transition-old(root){ animation: bsoa-fade-out .32s cubic-bezier(.4,0,1,1) forwards; }
+  ::view-transition-new(root){ animation: bsoa-fade-in .42s cubic-bezier(.16,1,.3,1) forwards; }
+  @keyframes bsoa-fade-out{ to{ opacity:0; transform:scale(1.03); } }
+  @keyframes bsoa-fade-in{ from{ opacity:0; transform:scale(.97); } to{ opacity:1; transform:scale(1); } }
+
+  /* Enter Portal camera-push, applied via JS before navigation (visible regardless of scroll position) */
+  body{ transition:transform .3s cubic-bezier(.6,0,.9,.2), filter .3s ease, opacity .3s ease; transform-origin:50% 40%; }
+  .portal-launch{ transform:scale(1.06); filter:blur(3px); opacity:0.4; }
+
   @media (max-width:900px){
-    body{ height:auto; overflow:auto; align-items:flex-start; padding:40px 0; }
-    .hero{ grid-template-columns:1fr; text-align:center; gap:26px; }
-    .hero-copy{ order:2; display:flex; flex-direction:column; align-items:center; }
-    .hero-art{ order:1; }
-    .hero-art svg{ max-height:260px; }
-    .hero-desc{ margin-left:auto; margin-right:auto; }
-    .hero-meta{ justify-content:center; }
-    .feature-grid{ grid-template-columns:1fr 1fr; }
+    .stage-inner{ grid-template-columns:1fr; text-align:center; padding-top:90px; }
+    .copy-block{ position:relative; }
+    .brand-mark{ justify-content:center; margin-left:auto; margin-right:auto; width:fit-content; }
+    .brand-name, .brand-sub{ text-align:left; }
+    .art-stage{ display:none; }
+    .stage{ height:auto; }
+    .stage-inner{ position:relative; height:auto; padding-bottom:60px; }
+    .copy-block{ opacity:1 !important; transform:none !important; pointer-events:auto !important; display:none; }
+    .copy-block.active{ display:block; }
+    .mini-grid{ grid-template-columns:1fr 1fr; }
   }
-  @media (max-width:520px){
-    h1{ font-size:28px; }
-    .feature-grid{ grid-template-columns:1fr; }
-  }
+  @media (max-width:520px){ .mini-grid{ grid-template-columns:1fr; } }
 
   @media (prefers-reduced-motion: reduce){
-    *, *::before, *::after{
-      animation-duration:.001ms !important;
-      animation-iteration-count:1 !important;
-      transition-duration:.001ms !important;
-    }
-  }
-
-  /* ---------- Portal click transition ---------- */
-  .portal-overlay{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:9999;
-  }
-  .portal-overlay .ring{
-    position:absolute;
-    width:26px;
-    height:26px;
-    margin-left:-13px;
-    margin-top:-13px;
-    border-radius:50%;
-    background:linear-gradient(135deg, var(--maroon-700), var(--maroon-600));
-    transform:scale(0);
-    opacity:0;
-  }
-  .portal-overlay.active .ring{
-    animation:portalExpand .5s cubic-bezier(.2,.8,.2,1) forwards;
-  }
-  @keyframes portalExpand{
-    0%{ transform:scale(0); opacity:.92; }
-    100%{ transform:scale(110); opacity:1; }
+    *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+    .stage{ height:auto; }
+    .stage-inner{ position:relative; height:auto; }
+    .copy-block{ position:relative; opacity:1; transform:none; display:none; }
+    .copy-block.active{ display:block; }
+    .panel{ position:relative; opacity:1; transform:none; display:none; margin:12px auto; }
+    .panel.active{ display:block; }
   }
 </style>
 </head>
 <body>
 
-<div class="page">
+<div class="progress-rail" id="progressRail"></div>
+<div class="top-badge">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>
+  Academic Monitoring System
+</div>
+<div class="scroll-cue" id="scrollCue"><span>Scroll</span><span class="chev"></span></div>
 
-  <section class="hero">
-    <div class="hero-copy">
-      <div class="hero-badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>
-        Academic Monitoring System
+<section class="stage" id="stage">
+  <div class="stage-inner" id="stageInner">
+
+    <div class="scene-copy">
+      <!-- Beat 0 -->
+      <div class="copy-block active" data-beat="0" style="--accent:var(--maroon-700); --accent-tint:#fdf6e6; --accent-line:#e6d5a3;">
+        <h1>
+          <div class="brand-mark">
+            <div class="brand-seal" aria-hidden="true">PUP</div>
+            <span>
+              <span class="brand-name">BSOAOUMN 2-7</span>
+              <span class="brand-sub">Student Portal</span>
+            </span>
+          </div>
+        </h1>
+        <div class="copy-rule"></div>
+        <p>A centralized platform for BSOAOUMN 2-7 students and class officers &mdash; attendance monitoring, activity tracking, student records, and internal academic management, all in one place.</p>
+        <div class="hero-meta">
+          <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--maroon-700)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>Secure</span>
+          <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue-700)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.3 2.3L15.5 9.5"/></svg>Reliable</span>
+          <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold-700)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Internal Use Only</span>
+        </div>
       </div>
-      <h1>BSOAOUMN 2-7<span>Student Portal</span></h1>
-      <div class="hero-rule"></div>
-      <p class="hero-desc">A centralized platform designed exclusively for BSOAOUMN 2-7 students and class officers for attendance monitoring, activity tracking, student records, and internal academic management.</p>
-      <div class="hero-actions">
-        <a class="btn-primary" href="index-lite.html">
-          Enter Portal
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-        </a>
+
+      <!-- Beat 1 -->
+      <div class="copy-block" data-beat="1" style="--accent:var(--maroon-700); --accent-tint:#fdf1f0; --accent-line:#f0d8d6;">
+        <div class="copy-eyebrow">Tool 01</div>
+        <h2>Weekly Attendance</h2>
+        <div class="copy-rule"></div>
+        <p>Submit your name, student number, date, and subject for the week &mdash; and watch the week's checkmarks fill in as records come through.</p>
       </div>
-      <div class="hero-meta">
-        <span class="item"><svg class="mi-secure" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>Secure</span>
-        <span class="item"><svg class="mi-reliable" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.3 2.3L15.5 9.5"/></svg>Reliable</span>
-        <span class="item"><svg class="mi-internal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Internal Use Only</span>
+
+      <!-- Beat 2 -->
+      <div class="copy-block" data-beat="2" style="--accent:var(--blue-700); --accent-tint:#eef4fa; --accent-line:#d7e5f2;">
+        <div class="copy-eyebrow">Tool 02</div>
+        <h2>Student Lookup</h2>
+        <div class="copy-rule"></div>
+        <p>Search a student number to view grades, enrollment, attendance records, and activity history in one expanding panel.</p>
+      </div>
+
+      <!-- Beat 3 -->
+      <div class="copy-block" data-beat="3" style="--accent:var(--green-700); --accent-tint:#edf6f0; --accent-line:#d5e9db;">
+        <div class="copy-eyebrow">Tool 03</div>
+        <h2>Mark My Activity</h2>
+        <div class="copy-rule"></div>
+        <p>Confirm you've completed an activity for a subject. Progress fills in as tasks are checked off, subject by subject.</p>
+      </div>
+
+      <!-- Beat 4 -->
+      <div class="copy-block" data-beat="4" style="--accent:var(--gold-700); --accent-tint:#faf4e6; --accent-line:#ecdfb9;">
+        <div class="copy-eyebrow">Tool 04</div>
+        <h2>Class Overview</h2>
+        <div class="copy-rule"></div>
+        <p>A snapshot of attendance and activity completion for officers &mdash; every module's data, connected in one view.</p>
       </div>
     </div>
 
-    <div class="hero-art">
-      <svg viewBox="0 0 520 400" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="baseGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#e4d9b9"/>
-            <stop offset="1" stop-color="#c9bb90"/>
-          </linearGradient>
-          <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#fffdf8"/>
-            <stop offset="1" stop-color="#f6efdd"/>
-          </linearGradient>
-          <linearGradient id="potGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#c26b4a"/>
-            <stop offset="1" stop-color="#9c4c2c"/>
-          </linearGradient>
-          <linearGradient id="bookA" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#9a1128"/>
-            <stop offset="1" stop-color="#6f0c1a"/>
-          </linearGradient>
-          <linearGradient id="bookB" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#8a6d1f"/>
-            <stop offset="1" stop-color="#6f5717"/>
-          </linearGradient>
-          <linearGradient id="bookC" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#134e8f"/>
-            <stop offset="1" stop-color="#0d3a6b"/>
-          </linearGradient>
-          <radialGradient id="medalGrad" cx="0.35" cy="0.3" r="0.8">
-            <stop offset="0" stop-color="#e8c874"/>
-            <stop offset="1" stop-color="#a97f24"/>
-          </radialGradient>
-        </defs>
-
-        <!-- soft architectural blueprint backdrop -->
-        <g class="parallax" style="--depth:0.2" opacity="0.14" stroke="#7a0c1e" stroke-width="1.3" fill="none">
-          <rect x="330" y="40" width="150" height="120" />
-          <line x1="330" y1="70" x2="480" y2="70"/>
-          <line x1="330" y1="100" x2="480" y2="100"/>
-          <line x1="330" y1="130" x2="480" y2="130"/>
-          <line x1="365" y1="40" x2="365" y2="160"/>
-          <line x1="400" y1="40" x2="400" y2="160"/>
-          <line x1="435" y1="40" x2="435" y2="160"/>
-          <polygon points="330,40 405,10 480,40"/>
-        </g>
-        <g opacity="0.16" fill="#8a6d1f">
-          <circle cx="452" cy="52" r="1.6"/><circle cx="464" cy="52" r="1.6"/><circle cx="476" cy="52" r="1.6"/>
-          <circle cx="452" cy="64" r="1.6"/><circle cx="464" cy="64" r="1.6"/><circle cx="476" cy="64" r="1.6"/>
-          <circle cx="452" cy="76" r="1.6"/><circle cx="464" cy="76" r="1.6"/><circle cx="476" cy="76" r="1.6"/>
-        </g>
-
-        <!-- ground shadow -->
-        <ellipse cx="260" cy="355" rx="200" ry="17" fill="#7a0c1e" opacity="0.07"/>
-
-        <!-- potted plant -->
-        <g class="parallax" style="--depth:1.6">
-          <g class="art-float">
-            <path d="M100 250c-16-9-21-29-12-44 4 16 12 27 12 44z" fill="#1a6b3f"/>
-            <path d="M100 250c16-12 18-34 5-49-2 18-9 33-5 49z" fill="#2f8f5c"/>
-            <path d="M100 250c-4-18 2-36 16-47-7 16-11 33-16 47z" fill="#256e46"/>
-            <path d="M84 250h32l-3 31a6 6 0 0 1-6 5H93a6 6 0 0 1-6-5z" fill="url(#potGrad)"/>
-            <rect x="81" y="246" width="38" height="8" rx="4" fill="#9c4c2c"/>
-          </g>
-        </g>
-
-        <!-- books + medallion (right side) -->
-        <g class="parallax" style="--depth:1.1">
-          <g class="art-float-slow">
-            <rect x="392" y="258" width="96" height="17" rx="4" fill="url(#bookC)"/>
-            <rect x="400" y="241" width="82" height="17" rx="4" fill="url(#bookB)"/>
-            <rect x="408" y="224" width="66" height="17" rx="4" fill="url(#bookA)"/>
-            <circle cx="446" cy="215" r="19" fill="url(#medalGrad)" stroke="#8a6d1f" stroke-width="1"/>
-            <circle cx="446" cy="215" r="12" fill="none" stroke="#fff7e0" stroke-width="1.2" opacity="0.7"/>
-            <path d="M446 207v16M439 215h14" stroke="#fff7e0" stroke-width="1.4" opacity="0.85"/>
-          </g>
-        </g>
-
-        <!-- notebook + pen -->
-        <g class="parallax" style="--depth:1.3">
-          <g class="art-float-rev">
-            <rect x="356" y="298" width="92" height="62" rx="6" fill="#fffdf8" stroke="#e7e0d0" stroke-width="1.5"/>
-            <rect x="356" y="298" width="10" height="62" rx="3" fill="#9a1128"/>
-            <line x1="378" y1="313" x2="436" y2="313" stroke="#e7e0d0" stroke-width="1.5"/>
-            <line x1="378" y1="326" x2="436" y2="326" stroke="#e7e0d0" stroke-width="1.5"/>
-            <line x1="378" y1="339" x2="420" y2="339" stroke="#e7e0d0" stroke-width="1.5"/>
-            <g transform="rotate(28 420 320)">
-              <rect x="405" y="317" width="58" height="6" rx="3" fill="#241f1a"/>
-              <polygon points="463,317 471,320 463,323" fill="#8a6d1f"/>
-            </g>
-          </g>
-        </g>
-
-        <!-- laptop -->
-        <g class="parallax" style="--depth:0.4">
-          <!-- keyboard base -->
+    <div class="art-stage">
+      <div class="laptop-wrap" id="laptopWrap">
+        <svg viewBox="0 0 520 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="baseGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#e4d9b9"/><stop offset="1" stop-color="#c9bb90"/>
+            </linearGradient>
+            <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fffdf8"/><stop offset="1" stop-color="#f6efdd"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="260" cy="355" rx="200" ry="17" fill="#7a0c1e" opacity="0.07"/>
           <polygon points="118,318 402,318 428,335 92,335" fill="url(#baseGrad)"/>
           <polygon points="92,335 428,335 428,342 92,342" fill="#a9976a"/>
           <polygon points="130,323 390,323 383,330 137,330" fill="#f1e6c4"/>
-
-          <!-- lid / bezel -->
-          <g class="art-float">
-            <rect x="112" y="98" width="296" height="222" rx="14" fill="#2a221d"/>
-            <rect x="112" y="98" width="296" height="222" rx="14" fill="none" stroke="#40352c" stroke-width="1"/>
-            <circle cx="260" cy="109" r="2.2" fill="#5b4d40"/>
-
-            <!-- screen -->
-            <rect x="124" y="120" width="272" height="188" rx="4" fill="url(#screenGrad)"/>
-
-            <!-- sidebar -->
-            <rect x="124" y="120" width="34" height="188" fill="#7a0c1e"/>
-            <g fill="#fdeee0">
-              <rect x="136" y="136" width="12" height="12" rx="3" fill="#fff" opacity="0.95"/>
-              <rect x="138" y="160" width="8" height="8" rx="2" opacity="0.55"/>
-              <rect x="138" y="180" width="8" height="8" rx="2" opacity="0.55"/>
-              <rect x="138" y="200" width="8" height="8" rx="2" opacity="0.55"/>
-              <rect x="138" y="220" width="8" height="8" rx="2" opacity="0.55"/>
-              <rect x="138" y="288" width="8" height="8" rx="2" opacity="0.45"/>
-            </g>
-
-            <!-- main content -->
-            <text x="172" y="144" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="10.5" fill="#241f1a">Welcome to the Student Portal</text>
-            <text x="172" y="158" font-family="'Inter', sans-serif" font-weight="500" font-size="8.5" fill="#8a8078">Choose a tool to continue.</text>
-
-            <!-- 4 tool tiles (equal size) -->
-            <g font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="7.4" text-anchor="middle">
-              <g>
-                <rect x="168" y="176" width="50" height="54" rx="8" fill="#fdf1f0" stroke="#f0d8d6" stroke-width="1"/>
-                <rect x="181" y="186" width="24" height="24" rx="6" fill="#7a0c1e"/>
-                <path d="M187 198h12M193 192v12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
-                <text x="193" y="221" fill="#7a0c1e">Weekly</text>
-                <text x="193" y="229" fill="#7a0c1e">Attendance</text>
-              </g>
-              <g>
-                <rect x="226" y="176" width="50" height="54" rx="8" fill="#eef4fa" stroke="#d7e5f2" stroke-width="1"/>
-                <rect x="239" y="186" width="24" height="24" rx="6" fill="#134e8f"/>
-                <circle cx="249" cy="196" r="4" fill="none" stroke="#fff" stroke-width="1.6"/>
-                <line x1="252" y1="199" x2="256" y2="203" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
-                <text x="251" y="221" fill="#134e8f">Student</text>
-                <text x="251" y="229" fill="#134e8f">Lookup</text>
-              </g>
-              <g>
-                <rect x="284" y="176" width="50" height="54" rx="8" fill="#edf6f0" stroke="#d5e9db" stroke-width="1"/>
-                <rect x="297" y="186" width="24" height="24" rx="6" fill="#1a6b3f"/>
-                <path d="M303 198l3 3 7-7" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                <text x="309" y="221" fill="#1a6b3f">Mark My</text>
-                <text x="309" y="229" fill="#1a6b3f">Activity</text>
-              </g>
-              <g>
-                <rect x="342" y="176" width="50" height="54" rx="8" fill="#faf4e6" stroke="#ecdfb9" stroke-width="1"/>
-                <rect x="355" y="186" width="24" height="24" rx="6" fill="#8a6d1f"/>
-                <rect x="359" y="199" width="4" height="8" fill="#fff"/>
-                <rect x="365" y="193" width="4" height="14" fill="#fff"/>
-                <rect x="371" y="196" width="4" height="11" fill="#fff"/>
-                <text x="367" y="221" fill="#8a6d1f">Class</text>
-                <text x="367" y="229" fill="#8a6d1f">Overview</text>
-              </g>
-            </g>
+          <rect x="112" y="98" width="296" height="222" rx="14" fill="#2a221d"/>
+          <rect x="112" y="98" width="296" height="222" rx="14" fill="none" stroke="#40352c" stroke-width="1"/>
+          <circle cx="260" cy="109" r="2.2" fill="#5b4d40"/>
+          <rect x="124" y="120" width="272" height="188" rx="4" fill="url(#screenGrad)"/>
+          <rect x="124" y="120" width="34" height="188" fill="#7a0c1e"/>
+          <g fill="#fdeee0">
+            <rect id="navDot0" x="136" y="136" width="12" height="12" rx="3" fill="#fff" opacity="0.95"/>
+            <rect id="navDot1" x="138" y="160" width="8" height="8" rx="2" opacity="0.55"/>
+            <rect id="navDot2" x="138" y="180" width="8" height="8" rx="2" opacity="0.55"/>
+            <rect id="navDot3" x="138" y="200" width="8" height="8" rx="2" opacity="0.55"/>
+            <rect id="navDot4" x="138" y="220" width="8" height="8" rx="2" opacity="0.55"/>
           </g>
-        </g>
-      </svg>
+          <text x="172" y="144" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="10.5" fill="#241f1a">Welcome to the Student Portal</text>
+          <text x="172" y="158" font-family="'Inter', sans-serif" font-weight="500" font-size="8.5" fill="#8a8078">Choose a tool to continue.</text>
+          <g font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="7.4" text-anchor="middle">
+            <g><rect x="168" y="176" width="50" height="54" rx="8" fill="#fdf1f0" stroke="#f0d8d6" stroke-width="1"/>
+              <rect x="181" y="186" width="24" height="24" rx="6" fill="#7a0c1e"/>
+              <path d="M187 198h12M193 192v12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+              <text x="193" y="221" fill="#7a0c1e">Weekly</text><text x="193" y="229" fill="#7a0c1e">Attendance</text></g>
+            <g><rect x="226" y="176" width="50" height="54" rx="8" fill="#eef4fa" stroke="#d7e5f2" stroke-width="1"/>
+              <rect x="239" y="186" width="24" height="24" rx="6" fill="#134e8f"/>
+              <circle cx="249" cy="196" r="4" fill="none" stroke="#fff" stroke-width="1.6"/>
+              <line x1="252" y1="199" x2="256" y2="203" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+              <text x="251" y="221" fill="#134e8f">Student</text><text x="251" y="229" fill="#134e8f">Lookup</text></g>
+            <g><rect x="284" y="176" width="50" height="54" rx="8" fill="#edf6f0" stroke="#d5e9db" stroke-width="1"/>
+              <rect x="297" y="186" width="24" height="24" rx="6" fill="#1a6b3f"/>
+              <path d="M303 198l3 3 7-7" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="309" y="221" fill="#1a6b3f">Mark My</text><text x="309" y="229" fill="#1a6b3f">Activity</text></g>
+            <g><rect x="342" y="176" width="50" height="54" rx="8" fill="#faf4e6" stroke="#ecdfb9" stroke-width="1"/>
+              <rect x="355" y="186" width="24" height="24" rx="6" fill="#8a6d1f"/>
+              <rect x="359" y="199" width="4" height="8" fill="#fff"/><rect x="365" y="193" width="4" height="14" fill="#fff"/><rect x="371" y="196" width="4" height="11" fill="#fff"/>
+              <text x="367" y="221" fill="#8a6d1f">Class</text><text x="367" y="229" fill="#8a6d1f">Overview</text></g>
+          </g>
+        </svg>
+
+        <!-- Floating glass panels -->
+        <div class="panel panel-attendance" data-beat="1" style="--accent:var(--maroon-700); --accent-tint:#fdf1f0;">
+          <div class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></div>
+          <h4>This week</h4>
+          <div class="week-grid">
+            <div class="d done" style="animation-delay:.05s"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div class="d done" style="animation-delay:.1s"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div class="d done" style="animation-delay:.15s"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div class="d"></div><div class="d"></div>
+          </div>
+        </div>
+
+        <div class="panel panel-lookup" data-beat="2" style="--accent:var(--blue-700); --accent-tint:#eef4fa;">
+          <div class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+          <div class="search-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>2023-04521</span></div>
+          <div class="result-line"></div><div class="result-line"></div><div class="result-line"></div>
+        </div>
+
+        <div class="panel panel-activity" data-beat="3" style="--accent:var(--green-700); --accent-tint:#edf6f0;">
+          <div class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Module 3 &mdash; Thermo</div>
+          <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Reflection Paper</div>
+          <div class="task-bar-track"><div class="task-bar-fill"></div></div>
+        </div>
+
+        <div class="panel panel-overview" data-beat="4" style="--accent:var(--gold-700); --accent-tint:#faf4e6;">
+          <div class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
+          <div class="donut"></div>
+          <div class="bar-row"><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
     </div>
-  </section>
 
-  <section class="features">
-    <div class="features-head">
-      <p class="features-eyebrow">Everything you need</p>
-      <h2>One portal. Four essential tools.</h2>
+  </div>
+</section>
+
+<section class="finale">
+  <p class="finale-eyebrow">Everything connects</p>
+  <h2>One portal. Four essential tools.</h2>
+  <p>Attendance, records, activity tracking, and class oversight &mdash; all in the same place you just watched come together.</p>
+
+  <div class="mini-grid">
+    <div class="mini-card" style="--top-color:var(--maroon-700);">
+      <div class="mini-icon" style="background:rgba(122,12,30,0.09); color:var(--maroon-700);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></div>
+      <h3>Attendance Monitoring</h3><p>Monitor and submit weekly attendance.</p>
     </div>
-
-    <div class="feature-grid">
-      <div class="feature f-attendance">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-            <path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>
-          </svg>
-        </div>
-        <h3>Attendance Monitoring</h3>
-        <p>Monitor and submit weekly attendance.</p>
-      </div>
-
-      <div class="feature f-lookup">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-          </svg>
-        </div>
-        <h3>Student Records</h3>
-        <p>Quickly search student information.</p>
-      </div>
-
-      <div class="feature f-tracking">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
-          </svg>
-        </div>
-        <h3>Activity Tracking</h3>
-        <p>Track completed academic activities.</p>
-      </div>
-
-      <div class="feature f-mgmt">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
-          </svg>
-        </div>
-        <h3>Class Management</h3>
-        <p>Access internal monitoring tools.</p>
-      </div>
+    <div class="mini-card" style="--top-color:var(--blue-700); animation-delay:.06s;">
+      <div class="mini-icon" style="background:rgba(19,78,143,0.09); color:var(--blue-700);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+      <h3>Student Records</h3><p>Quickly search student information.</p>
     </div>
-  </section>
+    <div class="mini-card" style="--top-color:var(--green-700); animation-delay:.12s;">
+      <div class="mini-icon" style="background:rgba(26,107,63,0.09); color:var(--green-700);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <h3>Activity Tracking</h3><p>Track completed academic activities.</p>
+    </div>
+    <div class="mini-card" style="--top-color:var(--gold-700); animation-delay:.18s;">
+      <div class="mini-icon" style="background:rgba(138,109,31,0.10); color:var(--gold-700);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
+      <h3>Class Management</h3><p>Access internal monitoring tools.</p>
+    </div>
+  </div>
 
-  <footer>
-    <div class="line2">Student Portal &nbsp;&middot;&nbsp; Internal Academic Monitoring &nbsp;&middot;&nbsp; Version 6.0.1 &nbsp;&middot;&nbsp; &copy; 2026</div>
-  </footer>
+  <a class="btn-primary" id="enterPortal" href="index-lite.html">
+    Enter Portal
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+  </a>
+</section>
 
-</div>
-
-<div class="portal-overlay" id="portalOverlay"><div class="ring" id="portalRing"></div></div>
+<footer>
+  <div class="line2">Student Portal &nbsp;&middot;&nbsp; Internal Academic Monitoring &nbsp;&middot;&nbsp; Version 6.0.1 &nbsp;&middot;&nbsp; &copy; 2026</div>
+</footer>
 
 <script>
-  // Cursor-driven parallax on the hero illustration. Only ever writes
-  // to two CSS custom properties (--px/--py) on one element — every
-  // .parallax layer reads them and multiplies by its own --depth, so
-  // this is one write per frame no matter how many layers exist, and
-  // it never touches layout, only transform (GPU compositor path).
-  (function(){
-    var heroArt = document.querySelector('.hero-art');
-    if (!heroArt) return;
+(function(){
+  var stage = document.getElementById('stage');
+  var progressRail = document.getElementById('progressRail');
+  var scrollCue = document.getElementById('scrollCue');
+  var copyBlocks = document.querySelectorAll('.copy-block');
+  var panels = document.querySelectorAll('.panel');
+  var navDots = [
+    document.getElementById('navDot0'), document.getElementById('navDot1'),
+    document.getElementById('navDot2'), document.getElementById('navDot3'), document.getElementById('navDot4')
+  ];
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var currentBeat = -1;
 
-    var isTouch = window.matchMedia('(hover: none)').matches;
-    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (isTouch || prefersReducedMotion) return;
-
-    var MAX_SHIFT = 6; // px, at the --depth:1 baseline
-    var rafScheduled = false;
-    var pending = null;
-
-    function flush(){
-      rafScheduled = false;
-      if (!pending) return;
-      heroArt.style.setProperty('--px', pending.x + 'px');
-      heroArt.style.setProperty('--py', pending.y + 'px');
-      pending = null;
-    }
-    function schedule(){
-      if (!rafScheduled){
-        rafScheduled = true;
-        requestAnimationFrame(flush);
-      }
-    }
-
-    heroArt.addEventListener('mousemove', function(e){
-      var rect = heroArt.getBoundingClientRect();
-      var xPct = (e.clientX - rect.left) / rect.width - 0.5;   // -0.5..0.5
-      var yPct = (e.clientY - rect.top) / rect.height - 0.5;
-      pending = { x: xPct * MAX_SHIFT * 2, y: yPct * MAX_SHIFT * 2 };
-      schedule();
+  function setBeat(beat){
+    if (beat === currentBeat) return;
+    currentBeat = beat;
+    copyBlocks.forEach(function(el){
+      el.classList.toggle('active', parseInt(el.dataset.beat, 10) === beat);
     });
-    heroArt.addEventListener('mouseleave', function(){
-      pending = { x: 0, y: 0 };
-      schedule();
+    panels.forEach(function(el){
+      el.classList.toggle('active', parseInt(el.dataset.beat, 10) <= beat && beat > 0);
     });
-  })();
+    navDots.forEach(function(dot, i){
+      if (!dot) return;
+      dot.setAttribute('opacity', i === beat ? '0.95' : '0.5');
+      dot.setAttribute('fill', i === beat ? '#fff' : '#fdeee0');
+    });
+  }
 
-  // Portal-style click transition on "Enter Portal" — a circle expands
-  // from the button, matching the name, then navigates. Cheap on any
-  // hardware: one element, transform+opacity only, no blur/filter.
-  (function(){
-    var btn = document.querySelector('.btn-primary');
-    var overlay = document.getElementById('portalOverlay');
-    var ring = document.getElementById('portalRing');
-    if (!btn || !overlay || !ring) return;
+  if (reduced){
+    setBeat(0);
+  } else {
+    var totalBeats = 5;
+    function onScroll(){
+      var rect = stage.getBoundingClientRect();
+      var stageHeight = stage.offsetHeight - window.innerHeight;
+      var scrolled = Math.min(Math.max(-rect.top, 0), stageHeight);
+      var progress = stageHeight > 0 ? scrolled / stageHeight : 0;
+      progressRail.style.width = (progress * 100) + '%';
+      scrollCue.classList.toggle('hide', progress > 0.03);
 
-    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduced){
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        var href = btn.getAttribute('href');
-        var rect = btn.getBoundingClientRect();
-        ring.style.left = (rect.left + rect.width / 2) + 'px';
-        ring.style.top = (rect.top + rect.height / 2) + 'px';
-        overlay.classList.add('active');
-        setTimeout(function(){ window.location.href = href; }, 460);
-      });
+      var beat = Math.min(totalBeats - 1, Math.floor(progress * totalBeats));
+      setBeat(beat);
     }
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+  }
 
-    // If the browser restores this page from bfcache (e.g. hitting
-    // "back" from the dashboard), the DOM snapshot would otherwise
-    // still have the overlay frozen at its fully-expanded final state
-    // from before navigating away, showing a stuck solid-maroon screen.
-    // `pageshow` fires on both a fresh load and a bfcache restore
-    // (unlike `load`, which only fires on a fresh load), so resetting
-    // here on every pageshow covers both cases.
-    window.addEventListener('pageshow', function(){
-      overlay.classList.remove('active');
-      ring.style.left = '';
-      ring.style.top = '';
-    });
-  })();
+  // Enter Portal: brief camera-push before the View Transition navigation
+  var enterBtn = document.getElementById('enterPortal');
+  enterBtn.addEventListener('click', function(e){
+    if (reduced) return; // let it navigate normally
+    e.preventDefault();
+    document.body.classList.add('portal-launch');
+    setTimeout(function(){
+      window.location.href = enterBtn.getAttribute('href');
+    }, 300);
+  });
+})();
 </script>
 
 </body>
