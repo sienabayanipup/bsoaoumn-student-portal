@@ -145,6 +145,25 @@
     .portal-screen, body.portal-camera{ display:none !important; }
   }
 
+  /* ---- "Back to Portal" transition: a single ripple from the click
+     point, nothing else. Only transform + opacity are animated. ---- */
+  .back-ripple{
+    position:fixed;
+    top:0; left:0;
+    width:26px; height:26px;
+    margin:-13px 0 0 -13px;
+    border-radius:50%;
+    background:radial-gradient(circle, #9a1128 0%, #7a0c1e 55%, #4a0712 100%);
+    opacity:.94;
+    transform:scale(0);
+    transform-origin:50% 50%;
+    transition:transform .6s cubic-bezier(.16,1,.3,1), opacity .6s ease .1s;
+    pointer-events:none;
+    z-index:9999;
+    will-change:transform;
+  }
+  .back-ripple.expand{ transform:scale(var(--rs,60)); opacity:1; }
+
   /* ---- Staggered dashboard build-in (sidebar → nav → header → cards →
      buttons → remaining UI), driven by JS below. Base/target states
      only — JS toggles .in and supplies the per-item delay. ---- */
@@ -798,43 +817,40 @@
       setTimeout(() => ripple.remove(), 650);
     });
   });
-  // ---- Back to Portal: full reverse transition ----
+  // ---- Back to Portal: a single ripple from the click point ----
   var backBtn = document.getElementById('backToPortal');
-  var portalScreenBack = document.getElementById('portalScreen');
   if (backBtn){
     backBtn.addEventListener('click', function(e){
       if (prefersReducedMotion) return; // let it navigate normally
       e.preventDefault();
       var href = backBtn.getAttribute('href');
-      var originX = e.clientX || (backBtn.getBoundingClientRect().left + backBtn.getBoundingClientRect().width / 2);
-      var originY = e.clientY || (backBtn.getBoundingClientRect().top + backBtn.getBoundingClientRect().height / 2);
-      if (portalScreenBack){
-        portalScreenBack.style.setProperty('--flash-x', originX + 'px');
-        portalScreenBack.style.setProperty('--flash-y', originY + 'px');
-      }
-
-      // STEP 1 — dashboard components fade away in reverse build order
-      // (buttons/cards -> header -> top nav -> sidebar badge)
-      var revealItems = Array.prototype.slice.call(document.querySelectorAll('.portal-reveal-item')).reverse();
-      revealItems.forEach(function(el, i){
-        setTimeout(function(){ el.classList.add('portal-hidden'); }, i * 50);
-      });
+      var rect = backBtn.getBoundingClientRect();
+      var originX = e.clientX || (rect.left + rect.width / 2);
+      var originY = e.clientY || (rect.top + rect.height / 2);
 
       backBtn.classList.add('depress');
 
+      var ripple = document.createElement('div');
+      ripple.className = 'back-ripple';
+      ripple.style.left = originX + 'px';
+      ripple.style.top = originY + 'px';
+      // Scale big enough that the 26px circle covers the farthest
+      // corner of the viewport from the click point.
+      var maxDist = Math.max(
+        Math.hypot(originX, originY),
+        Math.hypot(window.innerWidth - originX, originY),
+        Math.hypot(originX, window.innerHeight - originY),
+        Math.hypot(window.innerWidth - originX, window.innerHeight - originY)
+      );
+      ripple.style.setProperty('--rs', ((maxDist * 2.15) / 26).toFixed(2));
+      document.body.appendChild(ripple);
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ ripple.classList.add('expand'); });
+      });
+
       setTimeout(function(){
-        backBtn.classList.remove('depress');
-        // STEP 2 — the dashboard compresses toward the center, shrinking into the laptop
-        document.body.classList.add('portal-camera', 'shrinking');
-        // STEP 3 — the screen grows to fill the viewport as it goes
-        if (portalScreenBack) portalScreenBack.classList.add('grow');
-
-        try{ sessionStorage.setItem('portalNav', 'backward'); }catch(err){}
-
-        setTimeout(function(){
-          window.location.href = href;
-        }, 520); // total ~700ms — matches the shorter, lighter transition
-      }, 180); // let most of the reverse stagger play out first
+        window.location.href = href;
+      }, 560);
     });
   }
 
@@ -844,7 +860,9 @@
     if (evt.persisted){
       document.body.classList.remove('portal-camera', 'pushing', 'shrinking');
       document.documentElement.classList.remove('portal-arriving');
-      if (portalScreenBack) portalScreenBack.classList.remove('grow', 'fade-out');
+      var screenEl = document.getElementById('portalScreen');
+      if (screenEl) screenEl.classList.remove('grow', 'fade-out');
+      document.querySelectorAll('.back-ripple').forEach(function(el){ el.remove(); });
       document.querySelectorAll('.portal-reveal-item').forEach(function(el){ el.classList.remove('portal-hidden'); });
     }
   });
