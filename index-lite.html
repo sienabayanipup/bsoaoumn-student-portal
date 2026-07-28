@@ -72,7 +72,7 @@
     content:"";
     position:absolute;
     border-radius:50%;
-    opacity:0.05;
+    opacity:0.09;
     pointer-events:none;
     transition:transform .4s ease-out;
   }
@@ -242,15 +242,22 @@
     text-align:center;
     text-decoration:none;
     color:var(--ink);
-    background:var(--card);
-    border:1px solid var(--line);
-    border-top-width:5px; /* Creates an executive color tab */
-    border-radius:12px;
+    /* Glassmorphism: translucent frosted panel over the page's colored
+       blobs/gradients, not a flat opaque card */
+    background:linear-gradient(160deg, rgba(255,255,255,0.55), rgba(255,255,255,0.22));
+    backdrop-filter:blur(20px) saturate(170%);
+    -webkit-backdrop-filter:blur(20px) saturate(170%);
+    border:1px solid rgba(255,255,255,0.6);
+    border-radius:18px;
     padding:24px 22px;
     min-height:225px;
     justify-content:flex-start;
-    box-shadow:0 6px 18px rgba(36,31,26,0.10), 0 2px 6px rgba(36,31,26,0.07);
-    transition:transform .35s cubic-bezier(.2,.8,.3,1.15), box-shadow .35s ease, border-color .2s ease;
+    box-shadow:
+      0 10px 32px rgba(36,31,26,0.12),
+      0 2px 8px rgba(36,31,26,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.7),
+      inset 0 0 0 1px rgba(255,255,255,0.14);
+    transition:transform .35s cubic-bezier(.2,.8,.3,1.15), box-shadow .35s ease, border-color .2s ease, background .3s ease;
     cursor:pointer;
     position:relative;
     overflow:hidden;
@@ -258,12 +265,28 @@
     transform-style:preserve-3d;
     will-change:transform;
   }
+  /* Fallback for the rare browser without backdrop-filter support */
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    a.card{ background:var(--card); }
+  }
+
+  /* Color-coded top accent as a clean rounded strip (an ::after layer,
+     not a mismatched border-top-width) so the rounded corners stay crisp
+     with no seam where a thick top border met the thin side borders */
+  a.card::after{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:4px;
+    border-radius:18px 18px 0 0;
+    opacity:.95;
+  }
 
   a.card::before{
     content:"";
     position:absolute;
     inset:0;
-    background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.55), transparent 42%);
+    background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.65), transparent 42%);
     opacity:0;
     transition:opacity .3s ease;
     pointer-events:none;
@@ -272,7 +295,12 @@
 
   a.card:hover{
     transform:translateY(-9px) scale(1.015);
-    box-shadow:0 16px 34px rgba(36,31,26,0.16), 0 4px 10px rgba(36,31,26,0.10);
+    background:linear-gradient(160deg, rgba(255,255,255,0.66), rgba(255,255,255,0.3));
+    box-shadow:
+      0 18px 40px rgba(36,31,26,0.16),
+      0 4px 12px rgba(36,31,26,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.8),
+      inset 0 0 0 1px rgba(255,255,255,0.18);
   }
   a.card:active{
     transform:translateY(-3px) scale(1.005) !important;
@@ -306,20 +334,20 @@
   .cards a.card:nth-child(3){ animation-delay:.19s; }
   .cards a.card:nth-child(4){ animation-delay:.26s; }
 
-  .card.attendance { border-top-color: var(--maroon-700); }
-  .card.attendance:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(122,12,30,0.12), 0 8px 26px rgba(122,12,30,0.22); }
+  .card.attendance::after{ background:linear-gradient(90deg, var(--maroon-700), var(--maroon-600)); }
+  .card.attendance:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(122,12,30,0.14), 0 8px 26px rgba(122,12,30,0.22), inset 0 1px 0 rgba(255,255,255,0.8); }
   .card.attendance .ripple{ background:rgba(122,12,30,0.18); }
 
-  .card.lookup     { border-top-color: var(--blue-700); }
-  .card.lookup:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(19,78,143,0.12), 0 8px 26px rgba(19,78,143,0.22); }
+  .card.lookup::after{ background:linear-gradient(90deg, var(--blue-700), #1c66b8); }
+  .card.lookup:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(19,78,143,0.14), 0 8px 26px rgba(19,78,143,0.22), inset 0 1px 0 rgba(255,255,255,0.8); }
   .card.lookup .ripple{ background:rgba(19,78,143,0.18); }
 
-  .card.mark       { border-top-color: var(--green-700); }
-  .card.mark:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(26,107,63,0.12), 0 8px 26px rgba(26,107,63,0.22); }
+  .card.mark::after{ background:linear-gradient(90deg, var(--green-700), #228f52); }
+  .card.mark:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(26,107,63,0.14), 0 8px 26px rgba(26,107,63,0.22), inset 0 1px 0 rgba(255,255,255,0.8); }
   .card.mark .ripple{ background:rgba(26,107,63,0.18); }
 
-  .card.overview   { border-top-color: var(--gold-700); }
-  .card.overview:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(138,109,31,0.12), 0 8px 26px rgba(138,109,31,0.22); }
+  .card.overview::after{ background:linear-gradient(90deg, var(--gold-700), #a6822a); }
+  .card.overview:hover{ box-shadow:0 16px 34px rgba(36,31,26,0.14), 0 0 0 1px rgba(138,109,31,0.14), 0 8px 26px rgba(138,109,31,0.22), inset 0 1px 0 rgba(255,255,255,0.8); }
   .card.overview .ripple{ background:rgba(138,109,31,0.18); }
 
   /* ---- Icon badges: layered "3D" look (LITE: no blur glow) ---- */
@@ -332,6 +360,9 @@
     align-items:center;
     justify-content:center;
     position:relative;
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,0.5);
     transition:transform .25s cubic-bezier(.2,.8,.3,1.4), box-shadow .25s ease;
   }
   a.card:hover .icon-badge{ transform:scale(1.1) translateY(-2px); }
