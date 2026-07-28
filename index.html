@@ -69,8 +69,37 @@
   }
   @keyframes chevBounce{ 0%,100%{ transform:rotate(45deg) translate(0,0); } 50%{ transform:rotate(45deg) translate(3px,3px); } }
 
+  /* ---------- Intro beat (OFFICE ADMINISTRATION) ---------- */
+  /* Higher specificity than .copy-block.active (which sets
+     position:relative for every other beat) so this one actually stays
+     absolute and full-bleed instead of collapsing into its grid column. */
+  .stage-inner .copy-block.intro{
+    position:absolute; left:0; right:0; top:0; bottom:0; max-width:none;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+  }
+  .intro-seal{
+    width:64px; height:64px; margin-bottom:20px; border-radius:18px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display', serif; font-weight:700; font-size:17px;
+    color:var(--maroon-700); background:rgba(122,12,30,0.09); border:1px solid rgba(122,12,30,0.16);
+  }
+  .intro-name{
+    display:block; font-family:'Playfair Display', serif; font-weight:800;
+    font-size:clamp(38px, 6vw, 68px); line-height:1.02; letter-spacing:-0.01em;
+    color:var(--maroon-700);
+  }
+  .intro-sub{
+    display:block; margin-top:6px; font-family:'Pinyon Script', cursive; font-weight:400;
+    font-size:clamp(24px, 3vw, 32px); line-height:1; color:var(--gold-700);
+  }
+
+  /* Laptop stage only makes sense once we're past the intro title card */
+  .art-stage{ opacity:1; transition:opacity .6s ease; }
+  .stage-inner.intro-active .art-stage{ opacity:0; }
+
   /* ---------- Pinned stage ---------- */
-  .stage{ height:600vh; position:relative; }
+  .stage{ height:720vh; position:relative; }
   .stage-inner{
     position:sticky; top:0; height:100vh; width:100%;
     display:grid; grid-template-columns:0.86fr 1.14fr; align-items:center;
@@ -143,8 +172,8 @@
   .hero-meta svg{ width:14px; height:14px; }
 
   /* ---------- Art stage: laptop + floating panels ---------- */
-  .art-stage{ position:relative; display:flex; align-items:center; justify-content:center; height:100%; }
-  .laptop-wrap{ position:relative; width:100%; max-width:480px; transition:transform .6s cubic-bezier(.2,.8,.3,1); }
+  .art-stage{ position:relative; display:flex; align-items:center; justify-content:center; height:100%; perspective:1700px; }
+  .laptop-wrap{ position:relative; width:100%; max-width:480px; transform-style:preserve-3d; will-change:transform; }
   .laptop-wrap svg{ width:100%; height:auto; filter:drop-shadow(0 20px 30px rgba(122,12,30,0.12)); }
 
   .panel{
@@ -239,28 +268,48 @@
   body{ transition:transform .3s cubic-bezier(.6,0,.9,.2), filter .3s ease, opacity .3s ease; transform-origin:50% 40%; }
   .portal-launch{ transform:scale(1.06); filter:blur(3px); opacity:0.4; }
 
-  @media (max-width:900px){
-    .stage-inner{ grid-template-columns:1fr; text-align:center; padding-top:90px; }
-    .copy-block{ position:relative; }
+  @media (max-width:900px), (prefers-reduced-motion: reduce){
+    .stage{ height:auto; }
+    .stage-inner{
+      position:relative; height:auto; display:flex; flex-direction:column;
+      grid-template-columns:1fr; text-align:center; padding:90px 32px 40px;
+    }
     .brand-mark{ justify-content:center; margin-left:auto; margin-right:auto; width:fit-content; }
     .brand-name, .brand-sub{ text-align:left; }
-    .art-stage{ display:none; }
-    .stage{ height:auto; }
-    .stage-inner{ position:relative; height:auto; padding-bottom:60px; }
-    .copy-block{ opacity:1 !important; transform:none !important; pointer-events:auto !important; display:none; }
-    .copy-block.active{ display:block; }
+
+    /* .scene-copy disappears from the box model so each individual
+       copy-block (hero + all 4 feature beats) can be ordered as its
+       own flex item, alongside the laptop art, in one stacked column */
+    .scene-copy{ display:contents; }
+    .copy-block{
+      position:relative !important; opacity:1 !important; transform:none !important;
+      pointer-events:auto !important; display:block !important;
+      order:0; margin:0 0 48px; max-width:520px; margin-left:auto; margin-right:auto;
+    }
+    .copy-block[data-beat="1"]{ order:1; }
+    .copy-block[data-beat="2"]{ order:3; padding-top:40px; border-top:1px solid var(--line); }
+    .copy-block[data-beat="3"]{ order:4; padding-top:40px; border-top:1px solid var(--line); }
+    .copy-block[data-beat="4"]{ order:5; padding-top:40px; border-top:1px solid var(--line); }
+    .copy-block[data-beat="5"]{ order:6; padding-top:40px; border-top:1px solid var(--line); margin-bottom:8px; }
+    .copy-eyebrow{ margin-left:auto; margin-right:auto; }
+
+    /* Laptop art: visible, static, sitting right after the hero and
+       before the feature list — the floating glass panels rely on
+       absolute offsets tuned for the desktop layout, so those stay
+       hidden here rather than showing up broken/overlapping. */
+    .art-stage{
+      order:2; height:auto; perspective:none; margin:8px 0 4px; padding:0;
+      opacity:1 !important; /* always visible on mobile, regardless of intro-beat state */
+    }
+    .laptop-wrap{ max-width:360px; margin:0 auto; transform:none !important; }
+    .panel{ display:none !important; }
+
     .mini-grid{ grid-template-columns:1fr 1fr; }
   }
   @media (max-width:520px){ .mini-grid{ grid-template-columns:1fr; } }
 
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
-    .stage{ height:auto; }
-    .stage-inner{ position:relative; height:auto; }
-    .copy-block{ position:relative; opacity:1; transform:none; display:none; }
-    .copy-block.active{ display:block; }
-    .panel{ position:relative; opacity:1; transform:none; display:none; margin:12px auto; }
-    .panel.active{ display:block; }
   }
 </style>
 </head>
@@ -277,8 +326,15 @@
   <div class="stage-inner" id="stageInner">
 
     <div class="scene-copy">
-      <!-- Beat 0 -->
-      <div class="copy-block active" data-beat="0" style="--accent:var(--maroon-700); --accent-tint:#fdf6e6; --accent-line:#e6d5a3;">
+      <!-- Beat 0: Intro title card -->
+      <div class="copy-block intro active" data-beat="0">
+        <div class="intro-seal" aria-hidden="true">PUP</div>
+        <span class="intro-name">OFFICE ADMINISTRATION</span>
+        <span class="intro-sub">Excellence in Service</span>
+      </div>
+
+      <!-- Beat 1 (was Beat 0) -->
+      <div class="copy-block" data-beat="1" style="--accent:var(--maroon-700); --accent-tint:#fdf6e6; --accent-line:#e6d5a3;">
         <h1>
           <div class="brand-mark">
             <div class="brand-seal" aria-hidden="true">PUP</div>
@@ -297,33 +353,33 @@
         </div>
       </div>
 
-      <!-- Beat 1 -->
-      <div class="copy-block" data-beat="1" style="--accent:var(--maroon-700); --accent-tint:#fdf1f0; --accent-line:#f0d8d6;">
-        <div class="copy-eyebrow">Tool 01</div>
+      <!-- Beat 2 (was Beat 1) -->
+      <div class="copy-block" data-beat="2" style="--accent:var(--maroon-700); --accent-tint:#fdf1f0; --accent-line:#f0d8d6;">
+        <div class="copy-eyebrow">Module 01</div>
         <h2>Weekly Attendance</h2>
         <div class="copy-rule"></div>
         <p>Submit your name, student number, date, and subject for the week &mdash; and watch the week's checkmarks fill in as records come through.</p>
       </div>
 
-      <!-- Beat 2 -->
-      <div class="copy-block" data-beat="2" style="--accent:var(--blue-700); --accent-tint:#eef4fa; --accent-line:#d7e5f2;">
-        <div class="copy-eyebrow">Tool 02</div>
+      <!-- Beat 3 (was Beat 2) -->
+      <div class="copy-block" data-beat="3" style="--accent:var(--blue-700); --accent-tint:#eef4fa; --accent-line:#d7e5f2;">
+        <div class="copy-eyebrow">Module 02</div>
         <h2>Student Lookup</h2>
         <div class="copy-rule"></div>
         <p>Search a student number to view grades, enrollment, attendance records, and activity history in one expanding panel.</p>
       </div>
 
-      <!-- Beat 3 -->
-      <div class="copy-block" data-beat="3" style="--accent:var(--green-700); --accent-tint:#edf6f0; --accent-line:#d5e9db;">
-        <div class="copy-eyebrow">Tool 03</div>
+      <!-- Beat 4 (was Beat 3) -->
+      <div class="copy-block" data-beat="4" style="--accent:var(--green-700); --accent-tint:#edf6f0; --accent-line:#d5e9db;">
+        <div class="copy-eyebrow">Module 03</div>
         <h2>Mark My Activity</h2>
         <div class="copy-rule"></div>
         <p>Confirm you've completed an activity for a subject. Progress fills in as tasks are checked off, subject by subject.</p>
       </div>
 
-      <!-- Beat 4 -->
-      <div class="copy-block" data-beat="4" style="--accent:var(--gold-700); --accent-tint:#faf4e6; --accent-line:#ecdfb9;">
-        <div class="copy-eyebrow">Tool 04</div>
+      <!-- Beat 5 (was Beat 4) -->
+      <div class="copy-block" data-beat="5" style="--accent:var(--gold-700); --accent-tint:#faf4e6; --accent-line:#ecdfb9;">
+        <div class="copy-eyebrow">Module 04</div>
         <h2>Class Overview</h2>
         <div class="copy-rule"></div>
         <p>A snapshot of attendance and activity completion for officers &mdash; every module's data, connected in one view.</p>
@@ -381,7 +437,7 @@
         </svg>
 
         <!-- Floating glass panels -->
-        <div class="panel panel-attendance" data-beat="1" style="--accent:var(--maroon-700); --accent-tint:#fdf1f0;">
+        <div class="panel panel-attendance" data-beat="2" style="--accent:var(--maroon-700); --accent-tint:#fdf1f0;">
           <div class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></div>
           <h4>This week</h4>
           <div class="week-grid">
@@ -392,20 +448,20 @@
           </div>
         </div>
 
-        <div class="panel panel-lookup" data-beat="2" style="--accent:var(--blue-700); --accent-tint:#eef4fa;">
+        <div class="panel panel-lookup" data-beat="3" style="--accent:var(--blue-700); --accent-tint:#eef4fa;">
           <div class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
           <div class="search-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>2023-04521</span></div>
           <div class="result-line"></div><div class="result-line"></div><div class="result-line"></div>
         </div>
 
-        <div class="panel panel-activity" data-beat="3" style="--accent:var(--green-700); --accent-tint:#edf6f0;">
+        <div class="panel panel-activity" data-beat="4" style="--accent:var(--green-700); --accent-tint:#edf6f0;">
           <div class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
           <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Module 3 &mdash; Thermo</div>
           <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Reflection Paper</div>
           <div class="task-bar-track"><div class="task-bar-fill"></div></div>
         </div>
 
-        <div class="panel panel-overview" data-beat="4" style="--accent:var(--gold-700); --accent-tint:#faf4e6;">
+        <div class="panel panel-overview" data-beat="5" style="--accent:var(--gold-700); --accent-tint:#faf4e6;">
           <div class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
           <div class="donut"></div>
           <div class="bar-row"><i></i><i></i><i></i><i></i></div>
@@ -453,16 +509,26 @@
 <script>
 (function(){
   var stage = document.getElementById('stage');
+  var stageInner = document.getElementById('stageInner');
   var progressRail = document.getElementById('progressRail');
   var scrollCue = document.getElementById('scrollCue');
   var copyBlocks = document.querySelectorAll('.copy-block');
   var panels = document.querySelectorAll('.panel');
+  // These correspond to the laptop screen's own sidebar icons (Home +
+  // the 4 tools = 5 icons) — not one-per-beat, since beat 0 (the intro
+  // title card) has no laptop on screen at all. Home should highlight
+  // during beat 1, tool 1 during beat 2, and so on — see setBeat().
   var navDots = [
     document.getElementById('navDot0'), document.getElementById('navDot1'),
     document.getElementById('navDot2'), document.getElementById('navDot3'), document.getElementById('navDot4')
   ];
+  var laptopWrap = document.getElementById('laptopWrap');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var currentBeat = -1;
+
+  function easeInOutCubic(t){
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
 
   function setBeat(beat){
     if (beat === currentBeat) return;
@@ -473,31 +539,69 @@
     panels.forEach(function(el){
       el.classList.toggle('active', parseInt(el.dataset.beat, 10) <= beat && beat > 0);
     });
+    // Laptop/panels only make sense once we're past the intro card.
+    if (stageInner) stageInner.classList.toggle('intro-active', beat === 0);
     navDots.forEach(function(dot, i){
       if (!dot) return;
-      dot.setAttribute('opacity', i === beat ? '0.95' : '0.5');
-      dot.setAttribute('fill', i === beat ? '#fff' : '#fdeee0');
+      var active = i === beat - 1;
+      dot.setAttribute('opacity', active ? '0.95' : '0.5');
+      dot.setAttribute('fill', active ? '#fff' : '#fdeee0');
     });
   }
 
-  if (reduced){
-    setBeat(0);
-  } else {
-    var totalBeats = 5;
-    function onScroll(){
-      var rect = stage.getBoundingClientRect();
-      var stageHeight = stage.offsetHeight - window.innerHeight;
-      var scrolled = Math.min(Math.max(-rect.top, 0), stageHeight);
-      var progress = stageHeight > 0 ? scrolled / stageHeight : 0;
-      progressRail.style.width = (progress * 100) + '%';
-      scrollCue.classList.toggle('hide', progress > 0.03);
+  var compactQuery = window.matchMedia('(max-width:900px)');
+  var scrollBound = false;
 
-      var beat = Math.min(totalBeats - 1, Math.floor(progress * totalBeats));
-      setBeat(beat);
+  var totalBeats = 6;
+  var beatSpan = 1 / totalBeats;
+  // The laptop completes one full turn within the first 82% of beat 1's
+  // scroll span (beat 0 is the intro card, no laptop yet), so it's
+  // facing forward again just before "Weekly Attendance" (beat 2) takes
+  // over — no dead scroll before it starts.
+  var turnStart = beatSpan;
+  var turnDuration = beatSpan * 0.82;
+
+  function onScroll(){
+    var rect = stage.getBoundingClientRect();
+    var stageHeight = stage.offsetHeight - window.innerHeight;
+    var scrolled = Math.min(Math.max(-rect.top, 0), stageHeight);
+    var progress = stageHeight > 0 ? scrolled / stageHeight : 0;
+    progressRail.style.width = (progress * 100) + '%';
+    scrollCue.classList.toggle('hide', progress > 0.03);
+
+    if (laptopWrap){
+      var turnT = progress > turnStart
+        ? Math.min(1, (progress - turnStart) / turnDuration)
+        : 0;
+      laptopWrap.style.transform = 'rotateY(' + (easeInOutCubic(turnT) * 360) + 'deg)';
     }
-    window.addEventListener('scroll', onScroll, { passive:true });
+
+    var beat = Math.min(totalBeats - 1, Math.floor(progress * totalBeats));
+    setBeat(beat);
+  }
+
+  // Mobile (and reduced-motion) get a plain, always-visible stacked
+  // layout via CSS — the pinned scroll-jack / laptop spin only make
+  // sense with the sticky desktop stage, so they're switched off here
+  // rather than silently stalling on beat 0 forever.
+  function useCompactMode(){
+    if (scrollBound){ window.removeEventListener('scroll', onScroll); scrollBound = false; }
+    if (laptopWrap) laptopWrap.style.transform = '';
+    progressRail.style.width = '0%';
+    setBeat(0);
+  }
+  function useCinematicMode(){
+    if (!scrollBound){ window.addEventListener('scroll', onScroll, { passive:true }); scrollBound = true; }
     onScroll();
   }
+  function applyMode(){
+    if (reduced || compactQuery.matches) useCompactMode();
+    else useCinematicMode();
+  }
+
+  applyMode();
+  if (compactQuery.addEventListener) compactQuery.addEventListener('change', applyMode);
+  else if (compactQuery.addListener) compactQuery.addListener(applyMode);
 
   // Enter Portal: brief camera-push before the View Transition navigation
   var enterBtn = document.getElementById('enterPortal');
