@@ -21,7 +21,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Pinyon+Script&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Pinyon+Script&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@500&family=Bodoni+Moda:wght@700&family=Cormorant+Garamond:wght@700&family=Josefin+Sans:wght@400;500;600&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --maroon-700:#7a0c1e;
@@ -36,6 +36,12 @@
     --line:#e7e0d0;
     --ink:#241f1a;
     --muted:#6b6a68;
+
+    /* Editorial hero-only tokens — scoped to .intro-* below.
+       Kept distinct from --maroon-700/--gold-700 so the rest of the
+       site (buttons, other beats, portal screen) is untouched. */
+    --editorial-maroon:#6f1126;
+    --editorial-gold:#b88a2c;
   }
   *{box-sizing:border-box;}
   html{ scroll-behavior:auto; }
@@ -72,8 +78,8 @@
   .scroll-cue{
     position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:40;
     display:flex; flex-direction:column; align-items:center; gap:6px;
-    font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10px;
-    letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+    font-family:'Josefin Sans', sans-serif; font-weight:500; font-size:11px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
     opacity:1; transition:opacity .3s ease;
   }
   .scroll-cue.hide{ opacity:0; pointer-events:none; }
@@ -140,30 +146,28 @@
   }
 
   .intro-university{
-    display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px;
-    letter-spacing:.22em; text-transform:uppercase; color:var(--gold-700); margin-bottom:26px;
-    opacity:0; transform:translateY(-10px); animation:introRiseIn .6s cubic-bezier(.22,1,.36,1) forwards; animation-delay:.15s;
+    display:block; font-family:'Josefin Sans', sans-serif; font-weight:500; font-size:clamp(15px, 1.1vw, 18px);
+    letter-spacing:.35em; text-transform:uppercase; color:var(--editorial-gold); margin-bottom:22px;
+    opacity:0; transform:translateY(-10px); animation:introUnivRiseIn .6s cubic-bezier(.22,1,.36,1) forwards; animation-delay:.15s;
   }
-  .intro-title-wrap{ position:relative; overflow:hidden; }
+  @keyframes introUnivRiseIn{ to{ opacity:.9; transform:translateY(0); } }
+  .intro-title-wrap{
+    position:relative; overflow:hidden; max-width:100%; width:100%; margin:0 auto;
+    display:flex; flex-direction:column; align-items:center;
+  }
   .intro-title-line{
-    display:block; font-family:'Playfair Display', serif; font-weight:700;
-    font-size:clamp(46px, 8.6vw, 104px); line-height:1.0; letter-spacing:.01em;
-    color:var(--maroon-700); opacity:0; transform:translateY(30px);
+    display:block; font-family:'Bodoni Moda', 'Cormorant Garamond', serif; font-weight:700;
+    font-size:clamp(52px, 7.2vw, 104px);
+    line-height:.92; letter-spacing:-0.02em; white-space:nowrap;
+    color:var(--editorial-maroon); opacity:0; transform:translateY(30px);
     animation:introRiseIn .75s cubic-bezier(.22,1,.36,1) forwards;
-    text-shadow:0 0 0 rgba(122,12,30,0);
   }
-  .intro-title-line.line-1, .intro-title-line.line-2{
-    animation-name:introRiseIn, introTitleGlow;
-    animation-duration:.75s, 1.6s;
-    animation-timing-function:cubic-bezier(.22,1,.36,1), ease-out;
-    animation-fill-mode:forwards, forwards;
+  .intro-title-line.line-1{
+    animation-delay:.55s;
   }
-  .intro-title-line.line-1{ animation-delay:.55s, .55s; }
-  .intro-title-line.line-2{ animation-delay:.85s, .85s; }
-  @keyframes introTitleGlow{
-    0%{ text-shadow:0 0 0 rgba(122,12,30,0); }
-    55%{ text-shadow:0 0 30px rgba(122,12,30,0.22); }
-    100%{ text-shadow:0 0 0 rgba(122,12,30,0); }
+  .intro-title-line.line-2{
+    margin-top:2px;
+    animation-delay:.85s;
   }
   .intro-sweep{
     position:absolute; top:0; bottom:0; left:-30%; width:22%;
@@ -179,25 +183,27 @@
     100%{ opacity:0; transform:translateX(480%) skewX(-14deg); }
   }
   .intro-gold-line{
-    width:0; height:3px; margin:26px auto 22px; border-radius:2px;
-    background:linear-gradient(90deg, transparent, var(--gold-700), transparent);
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:140px; margin:24px auto 22px;
+    opacity:0; transform:scaleX(0);
     animation:introLineGrow .6s cubic-bezier(.22,1,.36,1) forwards; animation-delay:1.15s;
   }
-  @keyframes introLineGrow{ to{ width:84px; } }
+  .intro-gold-line::before, .intro-gold-line::after{
+    content:''; flex:1 1 auto; height:1px;
+    background:var(--editorial-gold);
+  }
+  .intro-gold-line .divider-diamond{
+    flex:0 0 auto; width:6px; height:6px; transform:rotate(45deg);
+    background:var(--editorial-gold);
+  }
+  @keyframes introLineGrow{ to{ opacity:.8; transform:scaleX(1); } }
   .intro-subtitle{
     display:block; font-family:'Pinyon Script', cursive; font-weight:400;
-    font-size:clamp(22px, 2.6vw, 30px); color:var(--gold-700); line-height:1;
+    font-size:clamp(34px, 3.6vw, 46px); letter-spacing:.01em; text-transform:none;
+    color:var(--editorial-gold); line-height:1.3;
     opacity:0; transform:translateY(10px); animation:introRiseIn .6s cubic-bezier(.22,1,.36,1) forwards; animation-delay:1.35s;
   }
   @keyframes introRiseIn{ to{ opacity:1; transform:translateY(0); } }
-
-  .intro-divider{
-    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-    display:flex; align-items:center; gap:14px; opacity:0; pointer-events:none;
-    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px;
-    letter-spacing:.16em; text-transform:uppercase; color:var(--maroon-700); white-space:nowrap;
-  }
-  .intro-divider .divider-rule{ width:38px; height:1px; background:var(--maroon-700); opacity:.5; }
 
   /* Laptop rise: separate wrapper from .laptop-wrap so it doesn't fight
      the rotateY spin transform that JS applies to .laptop-wrap itself */
@@ -444,7 +450,6 @@
     .copy-block[data-beat="4"]{ order:5; padding-top:40px; border-top:1px solid var(--line); }
     .copy-block[data-beat="5"]{ order:6; padding-top:40px; border-top:1px solid var(--line); margin-bottom:8px; }
     .copy-eyebrow{ margin-left:auto; margin-right:auto; }
-    .intro-title-line{ font-size:clamp(34px, 11vw, 58px); letter-spacing:0; }
 
     /* Laptop art: visible, static, sitting right after the hero and
        before the feature list — the floating glass panels rely on
@@ -458,6 +463,22 @@
     .panel{ display:none !important; }
 
     .mini-grid{ grid-template-columns:1fr 1fr; }
+  }
+
+  /* Tablet tier: 601–900px (compact layout caps the column at 520px,
+     regardless of viewport — sizes below are measured against that,
+     not raw vw, so ADMINISTRATION can't overflow it) */
+  @media (max-width:900px){
+    .intro-title-wrap{ max-width:100%; }
+    .intro-title-line{ font-size:clamp(34px, 6.8vw, 50px); letter-spacing:-0.01em; }
+    .intro-title-line.line-2{ margin-top:2px; }
+  }
+  /* Mobile tier: <=600px — column width tracks the viewport here, so
+     font-size scales with vw (minus a fixed offset) rather than a flat cap */
+  @media (max-width:600px){
+    .intro-title-wrap{ max-width:100%; }
+    .intro-title-line{ font-size:clamp(22px, calc(9vw - 4px), 50px); letter-spacing:0; white-space:nowrap; }
+    .intro-title-line.line-2{ margin-top:0; }
   }
   @media (max-width:520px){ .mini-grid{ grid-template-columns:1fr; } }
 
@@ -493,13 +514,8 @@
           <span class="intro-title-line line-2">ADMINISTRATION</span>
           <span class="intro-sweep" aria-hidden="true"></span>
         </div>
-        <div class="intro-gold-line"></div>
+        <div class="intro-gold-line"><span class="divider-diamond" aria-hidden="true"></span></div>
         <span class="intro-subtitle">Where Future Office Professionals Stay Organized</span>
-        <div class="intro-divider" id="introDivider" aria-hidden="true">
-          <span class="divider-rule"></span>
-          <span>Academic Monitoring System</span>
-          <span class="divider-rule"></span>
-        </div>
       </div>
 
       <!-- Beat 1 (was Beat 0) -->
@@ -702,9 +718,44 @@
   if (introBgEl){
     introBgEl.addEventListener('animationend', function(){ introBgEl.style.animation = 'none'; });
   }
-  var introDivider = document.getElementById('introDivider');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var currentBeat = -1;
+
+  // ---- Auto-fit "OFFICE" / "ADMINISTRATION" so they can never clip ----
+  // The clamp()/vw sizing below is a reasonable starting point, but the
+  // exact rendered width of a big display font also depends on which
+  // font actually loaded, the browser, and the precise viewport width —
+  // no fixed vw ratio can be proven safe on every device. So instead of
+  // guessing tighter and tighter vw numbers, measure the real rendered
+  // width after layout and shrink only as much as needed to fit inside
+  // a safe margin. On most screens this changes nothing (the CSS size
+  // already fits); it only steps in where it would otherwise overflow.
+  var introTitleLines = document.querySelectorAll('.intro-title-line');
+  var introTitleWrap = document.querySelector('.intro-title-wrap');
+  function fitIntroTitles(){
+    if (!introTitleLines.length) return;
+    var safeWidth = (introTitleWrap ? introTitleWrap.clientWidth : window.innerWidth) * 0.96;
+    introTitleLines.forEach(function(line){
+      line.style.fontSize = ''; // reset to the CSS baseline before re-measuring
+      var naturalWidth = line.getBoundingClientRect().width;
+      if (naturalWidth > safeWidth && naturalWidth > 0){
+        var cssSize = parseFloat(getComputedStyle(line).fontSize);
+        line.style.fontSize = (cssSize * (safeWidth / naturalWidth)) + 'px';
+      }
+    });
+  }
+  fitIntroTitles();
+  if (document.fonts && document.fonts.ready){
+    // Fallback-font metrics differ from the real display font, so
+    // re-fit once the actual web font has finished loading.
+    document.fonts.ready.then(fitIntroTitles);
+  }
+  var fitResizeTimer;
+  window.addEventListener('resize', function(){
+    clearTimeout(fitResizeTimer);
+    fitResizeTimer = setTimeout(fitIntroTitles, 120);
+  }, { passive:true });
+  window.addEventListener('orientationchange', function(){ setTimeout(fitIntroTitles, 200); });
 
   function easeInOutCubic(t){
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -780,14 +831,6 @@
     if (stageInner){
       stageInner.style.transform = 'scale(' + (1 + eT0 * 0.06) + ')';
     }
-    if (introDivider){
-      // Brief 0.5s-ish window in the middle of the hand-off.
-      var dOpacity = 0;
-      if (t0 > 0.42 && t0 < 0.5) dOpacity = (t0 - 0.42) / 0.08;
-      else if (t0 >= 0.5 && t0 < 0.62) dOpacity = 1;
-      else if (t0 >= 0.62 && t0 < 0.7) dOpacity = 1 - (t0 - 0.62) / 0.08;
-      introDivider.style.opacity = String(dOpacity);
-    }
 
     var beat = Math.min(totalBeats - 1, Math.floor(progress * totalBeats));
     setBeat(beat);
@@ -803,7 +846,6 @@
     if (laptopRise){ laptopRise.style.opacity = ''; laptopRise.style.transform = ''; laptopRise.style.filter = ''; }
     if (introBlock){ introBlock.style.opacity = ''; introBlock.style.transform = ''; introBlock.style.filter = ''; }
     if (stageInner) stageInner.style.transform = '';
-    if (introDivider) introDivider.style.opacity = '';
     progressRail.style.width = '0%';
     setBeat(0);
   }
