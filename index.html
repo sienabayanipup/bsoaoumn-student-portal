@@ -385,31 +385,32 @@
   /* STEP 1 — the Enter Portal button gently depresses on click */
   #enterPortal.depress{ transform:scale(.97); transition:transform .12s cubic-bezier(.22,1,.36,1); }
 
-  /* STEP 2 — the whole page takes a subtle camera push: scale up,
-     blur in, dim slightly. Used both leaving this page (forward) and
-     arriving back onto it (backward, run in reverse). */
+  /* STEP 2 — the whole page takes a subtle camera push: scale up and
+     dim slightly. Only transform + opacity are animated (GPU
+     compositor only, no repaint) — a full-page filter:blur() here was
+     the main source of jank on lower-powered devices, so it's gone. */
   body.portal-camera{
-    transition:transform .95s cubic-bezier(.22,1,.36,1), filter .95s cubic-bezier(.22,1,.36,1);
-    transform-origin:50% 42%; will-change:transform, filter;
+    transition:transform .6s cubic-bezier(.22,1,.36,1), opacity .6s cubic-bezier(.22,1,.36,1);
+    transform-origin:50% 42%; will-change:transform, opacity;
   }
-  body.portal-camera.pushing{ transform:scale(1.08); filter:blur(6px) brightness(.9); }
-  html.portal-arriving body{ transform:scale(1.08); filter:blur(6px) brightness(.9); }
+  body.portal-camera.pushing{ transform:scale(1.035); opacity:.92; }
+  html.portal-arriving body{ transform:scale(1.035); opacity:.92; }
 
-  /* STEP 3 — the laptop screen becomes the transition anchor: a rounded
-     "screen" window grows from the click point until it fills the
-     entire viewport, then fades away on the other side to reveal the
-     destination page underneath. */
+  /* STEP 3 — a full-screen panel fades in over the page, then fades
+     away on the other side to reveal the destination underneath.
+     Opacity-only (no animated clip-path) — clip-path transitions force
+     a repaint every frame, which was the other big cost here. */
   .portal-screen{
     position:fixed; inset:0; z-index:9999; pointer-events:none;
     background:radial-gradient(circle at var(--flash-x,50%) var(--flash-y,50%), #241f1a 0%, #17130f 55%, #0c0a08 100%);
-    opacity:0; clip-path:inset(44% 40% round 18px);
-    transition:opacity .5s cubic-bezier(.16,1,.3,1), clip-path 1s cubic-bezier(.16,1,.3,1);
+    opacity:0;
+    transition:opacity .4s cubic-bezier(.16,1,.3,1);
   }
-  .portal-screen.grow{ opacity:1; clip-path:inset(0% 0% round 0px); }
-  .portal-screen.fade-out{ opacity:0; transition:opacity .6s cubic-bezier(.16,1,.3,1); }
+  .portal-screen.grow{ opacity:1; }
+  .portal-screen.fade-out{ opacity:0; transition:opacity .45s cubic-bezier(.16,1,.3,1); }
   /* Arriving back from the dashboard: start fully covered, no growth
      animation — we only ever fade this away on arrival. */
-  html.portal-arriving .portal-screen{ opacity:1; clip-path:inset(0% 0% round 0px); transition:none; }
+  html.portal-arriving .portal-screen{ opacity:1; transition:none; }
 
   @media (prefers-reduced-motion: reduce){
     .portal-screen, body.portal-camera{ display:none !important; }
@@ -855,7 +856,7 @@
 
       setTimeout(function(){
         window.location.href = href;
-      }, 850); // total ~970ms, within the 900-1200ms forward budget
+      }, 520); // total ~640ms — matches the shorter, lighter transition
     }, 120);
   });
 
@@ -897,7 +898,7 @@
         setTimeout(function(){
           document.body.classList.remove('portal-camera');
           if (portalScreen) portalScreen.classList.remove('grow', 'fade-out');
-        }, 1000);
+        }, 600);
       });
     });
   })();
