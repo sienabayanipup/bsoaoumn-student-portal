@@ -6,6 +6,24 @@
 <meta name="theme-color" content="#7a0c1e">
 <meta name="view-transition" content="same-origin">
 <title>BSOAOUMN 2-7 Monitoring Tools</title>
+<script>
+  // Runs before first paint: if we're arriving here from the landing
+  // page's "Enter Portal" ripple, start the page already fully covered
+  // by the portal screen so there is zero flash of the un-animated
+  // dashboard before the ripple collapses to reveal it.
+  (function(){
+    try{
+      if (sessionStorage.getItem('portalNav') === 'forward' &&
+          !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        document.documentElement.classList.add('portal-arriving');
+        var fx = sessionStorage.getItem('portalFlashXPct');
+        var fy = sessionStorage.getItem('portalFlashYPct');
+        if (fx) document.documentElement.style.setProperty('--flash-x', fx + '%');
+        if (fy) document.documentElement.style.setProperty('--flash-y', fy + '%');
+      }
+    }catch(e){}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
@@ -466,16 +484,52 @@
     to{ opacity:1; transform:scale(1); }
   }
 
+  /* ---------- Back button ---------- */
+  .back-btn{
+    position:fixed; top:20px; left:20px; z-index:40;
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:12px;
+    letter-spacing:.03em; color:var(--maroon-700); text-decoration:none;
+    background:rgba(255,253,247,0.85); backdrop-filter:blur(6px);
+    border:1px solid var(--line); border-radius:999px; padding:8px 16px 8px 12px;
+    box-shadow:0 4px 12px rgba(36,31,26,0.08);
+    transition:transform .12s cubic-bezier(.22,1,.36,1), box-shadow .2s ease;
+  }
+  .back-btn svg{ width:15px; height:15px; }
+  .back-btn:hover{ box-shadow:0 6px 16px rgba(36,31,26,0.12); }
+  .back-btn.depress{ transform:scale(.95); }
+
+  /* ---------- Ripple portal screen (mirrors the landing page) ---------- */
+  /* A ripple ring expands outward from the click point and covers the
+     whole screen on the way out, then (on arrival, coming forward from
+     the landing page) starts fully covered and collapses back down to
+     that point to reveal the dashboard underneath. */
+  .portal-screen{
+    position:fixed; inset:0; z-index:9999; pointer-events:none;
+    background:radial-gradient(circle at var(--flash-x,50%) var(--flash-y,50%), #241f1a 0%, #17130f 55%, #0c0a08 100%);
+    clip-path:circle(0px at var(--flash-x,50%) var(--flash-y,50%));
+    transition:clip-path .55s cubic-bezier(.22,1,.36,1);
+  }
+  .portal-screen.grow{ clip-path:circle(farthest-corner at var(--flash-x,50%) var(--flash-y,50%)); }
+  .portal-screen.fade-out{ clip-path:circle(0px at var(--flash-x,50%) var(--flash-y,50%)); transition:clip-path .6s cubic-bezier(.22,1,.36,1); }
+  html.portal-arriving .portal-screen{ clip-path:circle(farthest-corner at var(--flash-x,50%) var(--flash-y,50%)); transition:none; }
+
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{
       animation-duration:.001ms !important;
       animation-iteration-count:1 !important;
       transition-duration:.001ms !important;
     }
+    .portal-screen{ display:none !important; }
   }
 </style>
 </head>
 <body>
+
+<a class="back-btn" id="backToPortal" href="index.html">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+  Back
+</a>
 
 <div class="wrap">
   <div class="seal"><span>PUP</span></div>
@@ -553,6 +607,8 @@
   <div>Version 6.0.1</div>
   <div>&copy; 2026 BSOAOUMN 2-7</div>
 </div>
+
+<div class="portal-screen" id="portalScreen" aria-hidden="true"></div>
 
 <script>
   // ---- Time-based greeting ----
@@ -654,6 +710,96 @@
       card.appendChild(ripple);
       setTimeout(() => ripple.remove(), 650);
     });
+  });
+
+  // ================= Portal Transition: Dashboard → Landing (leaving) =================
+  var backBtn = document.getElementById('backToPortal');
+  var portalScreen = document.getElementById('portalScreen');
+
+  if (backBtn){
+    backBtn.addEventListener('click', function(e){
+      if (prefersReducedMotion) return; // let it navigate normally, no motion
+      e.preventDefault();
+      var href = backBtn.getAttribute('href');
+      var rect = backBtn.getBoundingClientRect();
+      var originX = e.clientX || (rect.left + rect.width / 2);
+      var originY = e.clientY || (rect.top + rect.height / 2);
+      var xPct = (originX / window.innerWidth * 100).toFixed(2);
+      var yPct = (originY / window.innerHeight * 100).toFixed(2);
+      if (portalScreen){
+        portalScreen.style.setProperty('--flash-x', xPct + '%');
+        portalScreen.style.setProperty('--flash-y', yPct + '%');
+      }
+
+      // STEP 1 — button depresses briefly
+      backBtn.classList.add('depress');
+
+      setTimeout(function(){
+        backBtn.classList.remove('depress');
+
+        // STEP 2 — ripple expands from the click point to cover the screen
+        if (portalScreen) portalScreen.classList.add('grow');
+
+        // Tell the landing page a backward portal transition is coming,
+        // and where the ripple should originate so it can collapse from
+        // the same point once we arrive.
+        try{
+          sessionStorage.setItem('portalNav', 'backward');
+          sessionStorage.setItem('portalFlashXPct', xPct);
+          sessionStorage.setItem('portalFlashYPct', yPct);
+        }catch(err){}
+
+        setTimeout(function(){
+          window.location.href = href;
+        }, 520);
+      }, 120);
+    });
+  }
+
+  // ================= Portal Transition: Landing → Dashboard (arrival) =================
+  // If we're arriving here via the landing page's "Enter Portal" ripple,
+  // the page already started in the "portal-arriving" state (see the
+  // inline <script> in <head>) with the portal screen fully covering it.
+  // Now collapse the ripple back down to that point to reveal the
+  // dashboard underneath.
+  (function handleForwardArrival(){
+    var wasForwardNav = false;
+    try{ wasForwardNav = sessionStorage.getItem('portalNav') === 'forward'; }catch(err){}
+    if (!wasForwardNav) return;
+
+    try{
+      sessionStorage.removeItem('portalNav');
+      sessionStorage.removeItem('portalFlashXPct');
+      sessionStorage.removeItem('portalFlashYPct');
+    }catch(err){}
+
+    if (prefersReducedMotion){
+      document.documentElement.classList.remove('portal-arriving');
+      return;
+    }
+
+    requestAnimationFrame(function(){
+      document.documentElement.classList.remove('portal-arriving');
+      // Force the fully-covered state to commit before re-enabling the
+      // transition, so the collapse actually animates.
+      if (portalScreen) void portalScreen.offsetWidth;
+      requestAnimationFrame(function(){
+        if (portalScreen) portalScreen.classList.add('fade-out');
+        setTimeout(function(){
+          if (portalScreen) portalScreen.classList.remove('grow', 'fade-out');
+        }, 650);
+      });
+    });
+  })();
+
+  // Safety net: if this page is restored from the browser's back/forward
+  // cache mid-transition, guarantee it always comes back in a clean,
+  // fully visible state instead of stuck covered.
+  window.addEventListener('pageshow', function(evt){
+    if (evt.persisted){
+      document.documentElement.classList.remove('portal-arriving');
+      if (portalScreen) portalScreen.classList.remove('grow', 'fade-out');
+    }
   });
 </script>
 
