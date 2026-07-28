@@ -15,6 +15,10 @@
       if (sessionStorage.getItem('portalNav') === 'backward' &&
           !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
         document.documentElement.classList.add('portal-arriving');
+        var fx = sessionStorage.getItem('portalFlashXPct');
+        var fy = sessionStorage.getItem('portalFlashYPct');
+        if (fx) document.documentElement.style.setProperty('--flash-x', fx + '%');
+        if (fy) document.documentElement.style.setProperty('--flash-y', fy + '%');
       }
     }catch(e){}
   })();
@@ -406,21 +410,22 @@
   body.portal-camera.pushing{ transform:scale(1.035); opacity:.92; }
   html.portal-arriving body{ transform:scale(1.035); opacity:.92; }
 
-  /* STEP 3 — a full-screen panel fades in over the page, then fades
-     away on the other side to reveal the destination underneath.
-     Opacity-only (no animated clip-path) — clip-path transitions force
-     a repaint every frame, which was the other big cost here. */
+  /* STEP 3 — a ripple ring expands outward from the click point and
+     covers the whole screen, then (on the other side of the nav) the
+     same ripple collapses back down to that point to reveal the
+     destination underneath. Driven by clip-path so it reads as an
+     actual expanding/collapsing circle rather than a flat fade. */
   .portal-screen{
     position:fixed; inset:0; z-index:9999; pointer-events:none;
     background:radial-gradient(circle at var(--flash-x,50%) var(--flash-y,50%), #241f1a 0%, #17130f 55%, #0c0a08 100%);
-    opacity:0;
-    transition:opacity .4s cubic-bezier(.16,1,.3,1);
+    clip-path:circle(0px at var(--flash-x,50%) var(--flash-y,50%));
+    transition:clip-path .55s cubic-bezier(.22,1,.36,1);
   }
-  .portal-screen.grow{ opacity:1; }
-  .portal-screen.fade-out{ opacity:0; transition:opacity .45s cubic-bezier(.16,1,.3,1); }
-  /* Arriving back from the dashboard: start fully covered, no growth
-     animation — we only ever fade this away on arrival. */
-  html.portal-arriving .portal-screen{ opacity:1; transition:none; }
+  .portal-screen.grow{ clip-path:circle(farthest-corner at var(--flash-x,50%) var(--flash-y,50%)); }
+  .portal-screen.fade-out{ clip-path:circle(0px at var(--flash-x,50%) var(--flash-y,50%)); transition:clip-path .6s cubic-bezier(.22,1,.36,1); }
+  /* Arriving back from the dashboard: start fully covered (ripple already
+     expanded), no growth animation — we only ever collapse it on arrival. */
+  html.portal-arriving .portal-screen{ clip-path:circle(farthest-corner at var(--flash-x,50%) var(--flash-y,50%)); transition:none; }
 
   @media (prefers-reduced-motion: reduce){
     .portal-screen, body.portal-camera{ display:none !important; }
@@ -883,9 +888,11 @@
     var href = enterBtn.getAttribute('href');
     var originX = e.clientX || (enterBtn.getBoundingClientRect().left + enterBtn.getBoundingClientRect().width / 2);
     var originY = e.clientY || (enterBtn.getBoundingClientRect().top + enterBtn.getBoundingClientRect().height / 2);
+    var xPct = (originX / window.innerWidth * 100).toFixed(2);
+    var yPct = (originY / window.innerHeight * 100).toFixed(2);
     if (portalScreen){
-      portalScreen.style.setProperty('--flash-x', originX + 'px');
-      portalScreen.style.setProperty('--flash-y', originY + 'px');
+      portalScreen.style.setProperty('--flash-x', xPct + '%');
+      portalScreen.style.setProperty('--flash-y', yPct + '%');
     }
 
     // STEP 1 — button depresses (120ms)
@@ -905,6 +912,8 @@
       try{
         sessionStorage.setItem('portalNav', 'forward');
         sessionStorage.setItem('portalScrollY', String(window.scrollY));
+        sessionStorage.setItem('portalFlashXPct', xPct);
+        sessionStorage.setItem('portalFlashYPct', yPct);
       }catch(err){}
 
       setTimeout(function(){
@@ -929,6 +938,8 @@
       savedY = parseInt(sessionStorage.getItem('portalScrollY') || '0', 10);
       sessionStorage.removeItem('portalNav');
       sessionStorage.removeItem('portalScrollY');
+      sessionStorage.removeItem('portalFlashXPct');
+      sessionStorage.removeItem('portalFlashYPct');
     }catch(err){}
 
     window.scrollTo(0, savedY); // hidden behind the still-opaque portal screen
