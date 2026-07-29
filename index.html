@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="view-transition" content="same-origin">
 <title>BSOAOUMN 2-7 Student Portal</title>
+<script>
+  (function(){
+    try{
+      if (sessionStorage.getItem('veilNav') === '1' &&
+          !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        document.documentElement.classList.add('veil-arriving');
+      }
+    }catch(e){}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Pinyon+Script&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@500&family=Bodoni+Moda:wght@700&family=Cormorant+Garamond:wght@700&family=Josefin+Sans:wght@400;500;600&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
@@ -367,23 +377,21 @@
 
   @keyframes fadeInUp{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
 
-  ::view-transition-old(root){ animation: bsoa-fade-out .32s cubic-bezier(.4,0,1,1) forwards; }
-  ::view-transition-new(root){ animation: bsoa-fade-in .42s cubic-bezier(.16,1,.3,1) forwards; }
-  @keyframes bsoa-fade-out{ to{ opacity:0; transform:scale(1.03); } }
-  @keyframes bsoa-fade-in{ from{ opacity:0; transform:scale(.97); } to{ opacity:1; transform:scale(1); } }
-
-  /* Actually activates cross-document view transitions in supporting
-     browsers (Chrome/Edge 126+) — the <meta name="view-transition"> tag
-     alone does not turn this on. Same mechanism on both pages, so the
-     Enter Portal and Back navigations feel identical. Ignored safely
-     everywhere else; a plain link click just navigates normally. */
-  @view-transition{
-    navigation:auto;
+  /* ================= Maroon veil transition =================
+     Click Enter Portal or Back: the screen fades to solid maroon,
+     THEN navigates; the destination page starts covered and fades
+     the same veil back out to reveal itself. Plain opacity transition
+     on a fixed div — no clip-path, no camera, no per-browser API. */
+  .maroon-veil{
+    position:fixed; inset:0; z-index:9999; pointer-events:none;
+    background:var(--maroon-700);
+    opacity:0;
+    transition:opacity .32s ease;
   }
+  .maroon-veil.active{ opacity:1; }
+  html.veil-arriving .maroon-veil{ opacity:1; transition:none; }
   @media (prefers-reduced-motion: reduce){
-    ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*){
-      animation:none !important;
-    }
+    .maroon-veil{ display:none !important; }
   }
 
   @media (max-width:900px), (prefers-reduced-motion: reduce){
@@ -643,7 +651,7 @@
     </div>
   </div>
 
-  <a class="btn-primary" href="dashboard.html">
+  <a class="btn-primary" href="index-lite.html">
     Enter Portal
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
   </a>
@@ -831,8 +839,56 @@
     }, { passive:true });
   }
 
+  // ================= Maroon veil transition =================
+  var veil = document.getElementById('maroonVeil');
+  var enterLink = document.querySelector('a.btn-primary');
+
+  if (enterLink && veil){
+    enterLink.addEventListener('click', function(e){
+      if (reduced) return; // let it navigate normally, no motion
+      e.preventDefault();
+      var href = enterLink.getAttribute('href');
+      veil.classList.add('active');
+      try{ sessionStorage.setItem('veilNav', '1'); }catch(err){}
+      setTimeout(function(){
+        window.location.href = href;
+      }, 320);
+    });
+  }
+
+  // Arriving here (via the dashboard's Back link): start fully covered
+  // (see the pre-paint <script> in <head>), then fade the veil out.
+  (function handleVeilArrival(){
+    var wasVeiled = false;
+    try{ wasVeiled = sessionStorage.getItem('veilNav') === '1'; }catch(err){}
+    if (!wasVeiled) return;
+    try{ sessionStorage.removeItem('veilNav'); }catch(err){}
+
+    if (reduced){
+      document.documentElement.classList.remove('veil-arriving');
+      return;
+    }
+    requestAnimationFrame(function(){
+      document.documentElement.classList.remove('veil-arriving');
+      void veil.offsetWidth; // commit the covered state before enabling the transition
+      requestAnimationFrame(function(){
+        veil.classList.remove('active'); // fades opacity 1 -> 0 via the base transition
+      });
+    });
+  })();
+
+  // Safety net: bfcache restore should never leave the page stuck covered.
+  window.addEventListener('pageshow', function(evt){
+    if (evt.persisted){
+      document.documentElement.classList.remove('veil-arriving');
+      if (veil) veil.classList.remove('active');
+    }
+  });
+
 })();
 </script>
+
+<div class="maroon-veil" id="maroonVeil" aria-hidden="true"></div>
 
 </body>
 </html>
